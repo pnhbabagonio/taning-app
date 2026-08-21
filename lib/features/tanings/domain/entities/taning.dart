@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:flutter/material.dart';
 
 part 'taning.freezed.dart';
 part 'taning.g.dart';
@@ -241,7 +242,7 @@ class NotificationSettings with _$NotificationSettings {
         type: NotificationType.exactTime,
       ));
     }
-    if (customNotification && customMinutesBefore != null) {
+    if (customNotification == true && customMinutesBefore != null) {
       times.add(NotificationTime(
         time: target.subtract(Duration(minutes: customMinutesBefore!)),
         type: NotificationType.custom,

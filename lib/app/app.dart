@@ -21,10 +21,6 @@ class TaningApp extends ConsumerWidget {
       themeMode: themeMode,
       routerConfig: router,
       
-      // Accessibility
-      highContrast: ref.watch(highContrastProvider),
-      supportDisplay: true,
-      
       // Localization
       localizationsDelegates: const [
         // Add localization delegates

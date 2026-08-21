@@ -4,6 +4,7 @@ import 'package:taning/features/tanings/data/datasources/local_datasource.dart';
 import 'package:taning/features/tanings/data/mappers/taning_mapper.dart';
 import 'package:taning/features/tanings/data/repositories/taning_repository_impl.dart';
 import 'package:taning/features/tanings/domain/engines/countdown_engine.dart';
+import 'package:taning/features/tanings/domain/entities/taning.dart';
 import 'package:taning/features/tanings/domain/repositories/taning_repository.dart';
 
 // Database provider

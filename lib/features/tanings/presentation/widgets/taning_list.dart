@@ -254,7 +254,9 @@ class _TaningOptionsSheet extends ConsumerWidget {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              context.read(tandingRepositoryProvider).delete(id);
+                ProviderScope.containerOf(context, listen: false)
+                  .read(tandingRepositoryProvider)
+                  .delete(id);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Taning deleted')),
               );

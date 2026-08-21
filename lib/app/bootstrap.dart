@@ -2,6 +2,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:taning/core/services/logger.dart';
 import 'package:taning/core/services/notification_service.dart';
+import 'package:taning/core/services/timezone_service.dart';
 import 'package:taning/database/app_database.dart';
 
 Future<void> bootstrap() async {
@@ -20,7 +21,7 @@ Future<void> bootstrap() async {
   await AppDatabase.initialize();
   
   // Initialize notifications
-  await NotificationService.instance.initialize();
+  await NotificationService.initialize();
   
   // Set timezone
   await TimezoneService.initialize();

@@ -1,111 +1,80 @@
-import 'package:flutter_test/flutter_test.dart';
-import 'package:taning/features/tanings/domain/engines/countdown_engine.dart';
+import 'package:taning/features/tanings/domain/entities/countdown_state.dart';
 import 'package:taning/features/tanings/domain/entities/taning.dart';
 
-void main() {
-  late CountdownEngine engine;
-  
-  setUp(() {
-    engine = const CountdownEngine();
-  });
-  
-  group('CountdownEngine - Countdown Type', () {
-    test('calculates remaining days correctly', () {
-      final now = DateTime(2026, 8, 10);
-      final taning = Taning.create(
-        title: 'Vacation',
-        type: TaningType.countdown,
-        endDate: DateTime(2026, 8, 24),
-        isAllDay: true,
+class CountdownEngine {
+  const CountdownEngine();
+
+  CountdownState calculate({required DateTime now, required Taning taning}) {
+    final start = taning.startDate;
+    final end = taning.endDate;
+
+    if (taning.type == TaningType.countUp && start != null) {
+      final elapsed = now.difference(start);
+      return CountdownState(
+        status: CountdownStatus.active,
+        elapsedDuration: elapsed,
+        formattedRemaining: _format(elapsed),
+        isOverdue: false,
       );
-      
-      final state = engine.calculate(now: now, taning: taning);
-      
-      expect(state.remainingDuration?.inDays, 14);
-      expect(state.status, CountdownStatus.active);
-      expect(state.formattedRemaining, '14d');
-      expect(state.isOverdue, false);
-    });
-    
-    test('handles exact time countdown', () {
-      final now = DateTime(2026, 8, 10, 10, 0);
-      final taning = Taning.create(
-        title: 'Exam',
-        type: TaningType.countdown,
-        endDate: DateTime(2026, 8, 10, 14, 0),
-        isAllDay: false,
+    }
+
+    if (taning.type == TaningType.duration && start != null && end != null) {
+      final total = end.difference(start);
+      final elapsed = now.difference(start);
+      final progress = total.inSeconds == 0
+          ? 1.0
+          : (elapsed.inSeconds / total.inSeconds).clamp(0.0, 1.0);
+      return CountdownState(
+        status: now.isBefore(start)
+            ? CountdownStatus.upcoming
+            : now.isAfter(end)
+                ? CountdownStatus.ended
+                : CountdownStatus.active,
+        totalDuration: total,
+        elapsedDuration: elapsed,
+        progressPercentage: progress,
+        currentDay: elapsed.inDays + 1,
+        totalDays: total.inDays + 1,
+        formattedRemaining: _format(end.difference(now).isNegative
+            ? Duration.zero
+            : end.difference(now)),
+        targetDate: end,
+        isOverdue: now.isAfter(end),
       );
-      
-      final state = engine.calculate(now: now, taning: taning);
-      
-      expect(state.remainingDuration?.inHours, 4);
-      expect(state.status, CountdownStatus.lessThanDay);
-      expect(state.formattedRemaining, '4h 0m');
-    });
-    
-    test('detects overdue state', () {
-      final now = DateTime(2026, 8, 25);
-      final taning = Taning.create(
-        title: 'Vacation',
-        type: TaningType.countdown,
-        endDate: DateTime(2026, 8, 24),
+    }
+
+    if (end != null) {
+      final remaining = end.difference(now);
+      final overdue = remaining.isNegative;
+      final absolute = overdue ? remaining.abs() : remaining;
+      final status = overdue
+          ? CountdownStatus.overdue
+          : absolute.inHours < 1
+              ? CountdownStatus.lessThanHour
+              : absolute.inHours < 24
+                  ? CountdownStatus.lessThanDay
+                  : CountdownStatus.active;
+      return CountdownState(
+        status: status,
+        remainingDuration: remaining,
+        formattedRemaining: _format(absolute),
+        targetDate: end,
+        isOverdue: overdue,
       );
-      
-      final state = engine.calculate(now: now, taning: taning);
-      
-      expect(state.isOverdue, true);
-      expect(state.status, CountdownStatus.overdue);
-    });
-  });
-  
-  group('CountdownEngine - Duration Type', () {
-    test('calculates progress correctly', () {
-      final now = DateTime(2026, 8, 15);
-      final taning = Taning.create(
-        title: '30 Day Challenge',
-        type: TaningType.duration,
-        startDate: DateTime(2026, 8, 1),
-        endDate: DateTime(2026, 8, 31),
-      );
-      
-      final state = engine.calculate(now: now, taning: taning);
-      
-      expect(state.currentDay, 15);
-      expect(state.totalDays, 31);
-      expect(state.progressPercentage, closeTo(0.483, 0.01));
-      expect(state.status, CountdownStatus.active);
-    });
-    
-    test('detects completion', () {
-      final now = DateTime(2026, 9, 1);
-      final taning = Taning.create(
-        title: '30 Day Challenge',
-        type: TaningType.duration,
-        startDate: DateTime(2026, 8, 1),
-        endDate: DateTime(2026, 8, 31),
-      );
-      
-      final state = engine.calculate(now: now, taning: taning);
-      
-      expect(state.status, CountdownStatus.ended);
-      expect(state.progressPercentage, 1.0);
-    });
-  });
-  
-  group('CountdownEngine - CountUp Type', () {
-    test('counts up correctly', () {
-      final now = DateTime(2026, 8, 15);
-      final taning = Taning.create(
-        title: 'Since I started',
-        type: TaningType.countUp,
-        startDate: DateTime(2026, 8, 1),
-      );
-      
-      final state = engine.calculate(now: now, taning: taning);
-      
-      expect(state.elapsedDuration?.inDays, 14);
-      expect(state.status, CountdownStatus.active);
-      expect(state.formattedRemaining, '14d');
-    });
-  });
+    }
+
+    return const CountdownState(
+      status: CountdownStatus.upcoming,
+      formattedRemaining: '',
+      isOverdue: false,
+    );
+  }
+
+  String _format(Duration duration) {
+    if (duration.inDays > 0) return '${duration.inDays}d';
+    if (duration.inHours > 0) {
+      return '${duration.inHours}h ${duration.inMinutes.remainder(60)}m';
+    }
+    return '${duration.inMinutes}m';
+  }
 }
