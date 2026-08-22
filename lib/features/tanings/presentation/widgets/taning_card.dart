@@ -4,9 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:taning/core/utils/countdown_formatter.dart';
 import 'package:taning/features/tanings/domain/entities/countdown_state.dart';
 import 'package:taning/features/tanings/domain/entities/taning.dart';
-import 'package:taning/features/tanings/domain/engines/countdown_engine.dart';
 import 'package:taning/features/tanings/presentation/providers/taning_providers.dart';
-import 'package:taning/features/tanings/presentation/widgets/progress_indicator.dart';
 
 class TaningCard extends ConsumerStatefulWidget {
   final Taning taning;

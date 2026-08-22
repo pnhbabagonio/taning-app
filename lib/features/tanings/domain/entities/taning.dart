@@ -46,7 +46,7 @@ class Taning with _$Taning {
     TaningTheme? theme,
     CountdownStyle? countdownStyle,
     NotificationSettings? notificationSettings,
-    bool? isAllDay,
+    bool? isAllDay, String? description,
   }) {
     return Taning(
       id: DateTime.now().millisecondsSinceEpoch.toString(),

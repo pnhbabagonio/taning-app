@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:taning/features/tanings/presentation/providers/taning_providers.dart';
 import 'package:taning/features/tanings/presentation/widgets/taning_list.dart';
 import 'package:taning/shared/widgets/empty_state.dart';
@@ -65,7 +66,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          // TODO: Navigate to create screen
+          context.push('/create');
         },
         icon: const Icon(Icons.add),
         label: const Text('New Taning'),
@@ -99,7 +100,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         IconButton(
           icon: const Icon(Icons.settings_outlined),
           onPressed: () {
-            // TODO: Navigate to settings
+            context.push('/settings');
           },
           tooltip: 'Settings',
         ),

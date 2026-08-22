@@ -1,6 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:taning/features/tanings/domain/entities/taning.dart';
 import 'package:taning/features/tanings/presentation/screens/home_screen.dart';
+import 'package:taning/features/tanings/presentation/screens/create_screen.dart';
+import 'package:taning/features/tanings/presentation/screens/detail_screen.dart';
+import 'package:taning/features/tanings/presentation/screens/edit_screen.dart';
+import 'package:taning/features/tanings/presentation/screens/settings_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -11,7 +16,37 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         name: 'home',
         builder: (context, state) => const HomeScreen(),
       ),
-      // TODO: Add more routes as we build them
+      GoRoute(
+        path: '/create',
+        name: 'create',
+        builder: (context, state) => const CreateScreen(),
+      ),
+      GoRoute(
+        path: '/detail/:id',
+        name: 'detail',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return DetailScreen(id: id);
+        },
+      ),
+      GoRoute(
+        path: '/edit',
+        name: 'edit',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          if (extra == null || extra['taning'] == null) {
+            // If no taning is provided, go back to home
+            return const HomeScreen();
+          }
+          final taning = extra['taning'] as Taning;
+          return EditScreen(taning: taning);
+        },
+      ),
+      GoRoute(
+        path: '/settings',
+        name: 'settings',
+        builder: (context, state) => const SettingsScreen(),
+      ),
     ],
     redirect: (context, state) {
       return null;
