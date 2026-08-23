@@ -1,4 +1,3 @@
-// lib/app/theme/app_theme.dart
 import 'package:flutter/material.dart';
 import 'package:taning/app/theme/app_colors.dart';
 import 'package:taning/app/theme/app_typography.dart';
@@ -12,33 +11,27 @@ class AppTheme {
         primary: AppColors.primary,
         secondary: AppColors.secondary,
         surface: AppColors.lightSurface,
-        background: AppColors.lightBackground,
+        surfaceContainerHighest: AppColors.lightSurfaceVariant,
+        onSurface: AppColors.lightOnSurface,
+        onSurfaceVariant: AppColors.lightOnSurfaceVariant,
         error: AppColors.error,
         onPrimary: AppColors.lightOnPrimary,
         onSecondary: AppColors.lightOnPrimary,
-        onSurface: AppColors.lightOnSurface,
-        onBackground: AppColors.lightOnBackground,
         onError: AppColors.lightOnPrimary,
         primaryContainer: AppColors.primaryVeryLight,
         secondaryContainer: AppColors.primarySurface,
       ),
       
-      // Typography
       textTheme: AppTypography.lightTextTheme,
       
-      // Card
-      cardTheme: CardThemeData(
+      cardTheme: const CardTheme(
         elevation: 1,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.all(Radius.circular(16)),
         ),
-        color: AppColors.lightCard,
-        surfaceTintColor: Colors.transparent,
-        shadowColor: AppColors.lightShadow,
         clipBehavior: Clip.antiAlias,
       ),
       
-      // AppBar
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
@@ -57,14 +50,13 @@ class AppTheme {
         ),
       ),
       
-      // Buttons
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
           foregroundColor: AppColors.lightOnPrimary,
           elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(12)),
           ),
           padding: const EdgeInsets.symmetric(
             horizontal: 24,
@@ -80,8 +72,8 @@ class AppTheme {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: AppColors.primary,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(12)),
           ),
           padding: const EdgeInsets.symmetric(
             horizontal: 16,
@@ -94,8 +86,8 @@ class AppTheme {
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.primary,
           side: const BorderSide(color: AppColors.primary),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(12)),
           ),
           padding: const EdgeInsets.symmetric(
             horizontal: 24,
@@ -104,7 +96,6 @@ class AppTheme {
         ),
       ),
       
-      // Input
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.lightSurface,
@@ -147,7 +138,6 @@ class AppTheme {
         ),
       ),
       
-      // Bottom sheet
       bottomSheetTheme: const BottomSheetThemeData(
         backgroundColor: AppColors.lightSurface,
         surfaceTintColor: Colors.transparent,
@@ -158,15 +148,13 @@ class AppTheme {
         ),
       ),
       
-      // Dialog
-      dialogTheme: DialogThemeData(
+      dialogTheme: const DialogTheme(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.all(Radius.circular(20)),
         ),
         elevation: 8,
       ),
       
-      // Snackbar
       snackBarTheme: SnackBarThemeData(
         backgroundColor: AppColors.lightOnBackground,
         contentTextStyle: const TextStyle(color: AppColors.lightOnBackground),
@@ -176,14 +164,12 @@ class AppTheme {
         behavior: SnackBarBehavior.floating,
       ),
       
-      // Divider
       dividerTheme: const DividerThemeData(
         color: AppColors.lightDivider,
         thickness: 1,
         space: 24,
       ),
       
-      // Chip
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.lightSurfaceVariant,
         labelStyle: const TextStyle(
@@ -192,17 +178,16 @@ class AppTheme {
           color: AppColors.lightOnSurface,
         ),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(20)),
         ),
       ),
       
-      // Scrollbar
       scrollbarTheme: ScrollbarThemeData(
         radius: const Radius.circular(4),
-        thickness: MaterialStateProperty.all(4),
-        thumbColor: MaterialStateProperty.all(
-          AppColors.lightOnSurfaceVariant.withOpacity(0.3),
+        thickness: WidgetStateProperty.all(4),
+        thumbColor: WidgetStateProperty.all(
+          AppColors.lightOnSurfaceVariant.withValues(alpha: 0.3),
         ),
       ),
     );
@@ -216,12 +201,12 @@ class AppTheme {
         primary: AppColors.primaryLight,
         secondary: AppColors.secondaryLight,
         surface: AppColors.darkSurface,
-        background: AppColors.darkBackground,
+        surfaceContainerHighest: AppColors.darkSurfaceVariant,
+        onSurface: AppColors.darkOnSurface,
+        onSurfaceVariant: AppColors.darkOnSurfaceVariant,
         error: AppColors.error,
         onPrimary: AppColors.darkOnPrimary,
         onSecondary: AppColors.darkOnPrimary,
-        onSurface: AppColors.darkOnSurface,
-        onBackground: AppColors.darkOnBackground,
         onError: AppColors.darkOnPrimary,
         primaryContainer: AppColors.primaryDark,
         secondaryContainer: AppColors.secondaryDark,
@@ -229,14 +214,11 @@ class AppTheme {
       
       textTheme: AppTypography.darkTextTheme,
       
-      cardTheme: CardThemeData(
+      cardTheme: const CardTheme(
         elevation: 2,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.all(Radius.circular(16)),
         ),
-        color: AppColors.darkCard,
-        surfaceTintColor: Colors.transparent,
-        shadowColor: AppColors.darkShadow,
         clipBehavior: Clip.antiAlias,
       ),
       
@@ -263,8 +245,8 @@ class AppTheme {
           backgroundColor: AppColors.primaryLight,
           foregroundColor: AppColors.darkOnPrimary,
           elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(12)),
           ),
           padding: const EdgeInsets.symmetric(
             horizontal: 24,
@@ -329,9 +311,9 @@ class AppTheme {
         ),
       ),
       
-      dialogTheme: DialogThemeData(
+      dialogTheme: const DialogTheme(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.all(Radius.circular(20)),
         ),
         elevation: 8,
         backgroundColor: AppColors.darkSurface,
@@ -360,16 +342,16 @@ class AppTheme {
           color: AppColors.darkOnSurface,
         ),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(20)),
         ),
       ),
       
       scrollbarTheme: ScrollbarThemeData(
         radius: const Radius.circular(4),
-        thickness: MaterialStateProperty.all(4),
-        thumbColor: MaterialStateProperty.all(
-          AppColors.darkOnSurfaceVariant.withOpacity(0.3),
+        thickness: WidgetStateProperty.all(4),
+        thumbColor: WidgetStateProperty.all(
+          AppColors.darkOnSurfaceVariant.withValues(alpha: 0.3),
         ),
       ),
     );

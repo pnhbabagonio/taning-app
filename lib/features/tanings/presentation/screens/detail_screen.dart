@@ -1,15 +1,14 @@
-import 'dart:ui';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:taning/core/utils/countdown_formatter.dart';
+import 'package:taning/core/services/share_service.dart';
 import 'package:taning/features/tanings/domain/entities/countdown_state.dart';
 import 'package:taning/features/tanings/domain/entities/taning.dart';
 import 'package:taning/features/tanings/domain/engines/countdown_engine.dart';
 import 'package:taning/features/tanings/presentation/providers/taning_providers.dart';
-import 'package:taning/features/tanings/presentation/screens/edit_screen.dart';
 import 'package:taning/features/tanings/presentation/widgets/progress_indicators.dart';
-import 'package:taning/core/services/share_service.dart';
 
 class DetailScreen extends ConsumerStatefulWidget {
   final String id;
@@ -34,6 +33,7 @@ class _DetailScreenState extends ConsumerState<DetailScreen> with SingleTickerPr
     super.initState();
     _ticker = Ticker(_onTick);
     _ticker.start();
+    _updateState();
   }
 
   @override
@@ -47,7 +47,8 @@ class _DetailScreenState extends ConsumerState<DetailScreen> with SingleTickerPr
   }
 
   void _updateState() {
-    final taning = ref.read(taningProvider(widget.id)).value;
+    final taningAsync = ref.read(taningProvider(widget.id));
+    final taning = taningAsync.value;
     if (taning == null) return;
 
     final engine = ref.read(countdownEngineProvider);
@@ -213,17 +214,26 @@ class _DetailScreenState extends ConsumerState<DetailScreen> with SingleTickerPr
       ref.invalidate(taningProvider(id));
       _updateState();
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('🎉 Taning completed!'),
+        const SnackBar(
+          content: Text('🎉 Taning completed!'),
           behavior: SnackBarBehavior.floating,
-          duration: const Duration(seconds: 3),
+          duration: Duration(seconds: 3),
         ),
       );
     }
   }
+
+  void _openNotificationSettings(Taning taning) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => NotificationSettingsScreen(taningId: taning.id),
+    ),
+  );
+}
 }
 
-// MARK: - Detail Content (Simplified for brevity - keep your existing code)
+// MARK: - Detail Content
 
 class _DetailContent extends StatelessWidget {
   final Taning taning;
@@ -246,11 +256,499 @@ class _DetailContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ... keep your existing code ...
+    final color = taning.color.toColor();
+    final icon = IconData(
+      taning.icon.codePoint,
+      fontFamily: taning.icon.family ?? 'MaterialIcons',
+    );
+
     return Scaffold(
-      body: const Center(
-        child: Text('Detail Content - Keep your existing code here'),
+      appBar: _buildAppBar(context, color),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          children: [
+            _buildCountdownDisplay(color, icon),
+            const SizedBox(height: 32),
+            _buildProgressSection(color),
+            const SizedBox(height: 32),
+            _buildInformationSection(),
+            const SizedBox(height: 32),
+            _buildActionButtons(context),
+          ],
+        ),
       ),
+    );
+  }
+
+  AppBar _buildAppBar(BuildContext context, Color color) {
+    return AppBar(
+      title: Text(
+        taning.title,
+        style: const TextStyle(fontSize: 18),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      backgroundColor: Colors.transparent,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back_ios_new),
+        onPressed: () => Navigator.pop(context),
+      ),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.fullscreen),
+          onPressed: onFullscreen,
+          tooltip: 'Fullscreen',
+        ),
+        IconButton(
+          icon: const Icon(Icons.share_outlined),
+          onPressed: () => _shareTaning(context),
+          tooltip: 'Share',
+        ),
+        PopupMenuButton<String>(
+          icon: const Icon(Icons.more_vert),
+          onSelected: (value) {
+            switch (value) {
+              case 'edit':
+                onEdit();
+                break;
+              case 'archive':
+                onArchive();
+                break;
+              case 'complete':
+                onComplete();
+                break;
+              case 'delete':
+                onDelete();
+                break;
+              case 'notifications':
+                _openNotificationSettings(taning);
+                break;
+            }
+          },
+          itemBuilder: (context) => [
+            const PopupMenuItem(
+              value: 'edit',
+              child: Row(
+                children: [
+                  Icon(Icons.edit_outlined),
+                  SizedBox(width: 12),
+                  Text('Edit'),
+                ],
+              ),
+            ),
+            const PopupMenuItem(
+              value: 'archive',
+              child: Row(
+                children: [
+                  Icon(Icons.archive_outlined),
+                  SizedBox(width: 12),
+                  Text('Archive'),
+                ],
+              ),
+            ),
+            if (!taning.isCompleted)
+              const PopupMenuItem(
+                value: 'complete',
+                child: Row(
+                  children: [
+                    Icon(Icons.check_circle_outline),
+                    SizedBox(width: 12),
+                    Text('Mark Complete'),
+                  ],
+                ),
+              ),
+            const PopupMenuDivider(),
+            const PopupMenuItem(
+              value: 'delete',
+              child: Row(
+                children: [
+                  Icon(Icons.delete_outline, color: Colors.red),
+                  SizedBox(width: 12),
+                  Text('Delete', style: TextStyle(color: Colors.red)),
+                ],
+              ),
+            ),
+            // In detail_screen.dart - add this to popup menu items
+const PopupMenuItem(
+  value: 'notifications',
+  child: Row(
+    children: [
+      Icon(Icons.notifications_outlined),
+      SizedBox(width: 12),
+      Text('Notifications'),
+    ],
+  ),
+),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCountdownDisplay(Color color, IconData icon) {
+    final isFinished = state.isFinished || state.isOverdue;
+    final isOverdue = state.isOverdue;
+
+    return Container(
+      padding: const EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            color.withValues(alpha: 0.1),
+            color.withValues(alpha: 0.05),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
+      ),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.15),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: color, size: 40),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            taning.title,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 24),
+          if (isFinished && !isOverdue)
+            const Text(
+              '✨ Completed!',
+              style: TextStyle(
+                fontSize: 48,
+                fontWeight: FontWeight.w700,
+                color: Colors.green,
+              ),
+            )
+          else if (isOverdue)
+            Column(
+              children: [
+                Text(
+                  '${state.remainingDuration?.inDays.abs() ?? 0} days overdue',
+                  style: const TextStyle(
+                    fontSize: 36,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.red,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Time has passed',
+                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                ),
+              ],
+            )
+          else if (state.status == CountdownStatus.today)
+            const Text(
+              '🎉 Today!',
+              style: TextStyle(
+                fontSize: 48,
+                fontWeight: FontWeight.w700,
+              ),
+            )
+          else if (taning.type == TaningType.duration &&
+              state.currentDay != null &&
+              state.totalDays != null)
+            Column(
+              children: [
+                Text(
+                  'Day ${state.currentDay}',
+                  style: const TextStyle(
+                    fontSize: 48,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'of ${state.totalDays}',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            )
+          else
+            Column(
+              children: [
+                Text(
+                  _getMainDisplayText(),
+                  style: const TextStyle(
+                    fontSize: 48,
+                    fontWeight: FontWeight.w700,
+                    height: 1.0,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  _getUnitText(),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          const SizedBox(height: 16),
+          if (state.statusMessage != null && !isFinished)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    state.statusEmoji ?? '⏳',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    state.statusMessage!,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: color,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          if (state.targetDate != null && !isFinished)
+            Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: Text(
+                CountdownFormatter.formatDate(
+                  state.targetDate!,
+                  includeTime: !(taning.isAllDay ?? false),
+                ),
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  String _getMainDisplayText() {
+    final display = state.formattedRemaining;
+    if (display.isEmpty) return '0s';
+    
+    final numbers = RegExp(r'\d+').allMatches(display);
+    if (numbers.isNotEmpty) {
+      return numbers.first.group(0) ?? display;
+    }
+    return display;
+  }
+
+  String _getUnitText() {
+    final display = state.formattedRemaining;
+    if (display.isEmpty) return 'seconds';
+    
+    if (display.contains('d')) return 'days';
+    if (display.contains('h')) return 'hours';
+    if (display.contains('m')) return 'minutes';
+    if (display.contains('s')) return 'seconds';
+    return '';
+  }
+
+  Widget _buildProgressSection(Color color) {
+    if (state.progressPercentage == null) return const SizedBox.shrink();
+
+    final progress = state.progressPercentage!;
+    final isFinished = state.isFinished || state.isOverdue;
+
+    if (isFinished) return const SizedBox.shrink();
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Progress',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Text(
+                '${(progress * 100).toStringAsFixed(1)}%',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: color,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          LinearProgressBar(
+            progress: progress,
+            color: color,
+            height: 8,
+          ),
+          if (taning.type == TaningType.duration &&
+              state.currentDay != null &&
+              state.totalDays != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                'Day ${state.currentDay} of ${state.totalDays}',
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInformationSection() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        children: [
+          _buildInfoRow(
+            'Type',
+            _getTypeLabel(taning.type),
+            Icons.label_outline,
+          ),
+          const Divider(),
+          _buildInfoRow(
+            'Created',
+            CountdownFormatter.formatDate(taning.createdAt),
+            Icons.calendar_today_outlined,
+          ),
+          if (taning.updatedAt != null) ...[
+            const Divider(),
+            _buildInfoRow(
+              'Last modified',
+              CountdownFormatter.formatDate(taning.updatedAt!),
+              Icons.edit_outlined,
+            ),
+          ],
+          if (taning.isCompleted && taning.completedAt != null) ...[
+            const Divider(),
+            _buildInfoRow(
+              'Completed',
+              CountdownFormatter.formatDate(taning.completedAt!),
+              Icons.check_circle_outline,
+            ),
+          ],
+          if (taning.isPinned) ...[
+            const Divider(),
+            _buildInfoRow(
+              'Status',
+              'Pinned',
+              Icons.push_pin_outlined,
+            ),
+          ],
+          if (taning.isArchived) ...[
+            const Divider(),
+            _buildInfoRow(
+              'Status',
+              'Archived',
+              Icons.archive_outlined,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(String label, String value, IconData icon) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Icon(icon, size: 18, color: Colors.grey),
+          const SizedBox(width: 12),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 14,
+              color: Colors.grey,
+            ),
+          ),
+          const Spacer(),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _getTypeLabel(TaningType type) {
+    switch (type) {
+      case TaningType.countdown:
+        return 'Countdown';
+      case TaningType.duration:
+        return 'Duration';
+      case TaningType.countUp:
+        return 'Count Up';
+      case TaningType.recurring:
+        return 'Recurring';
+    }
+  }
+
+  Widget _buildActionButtons(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: OutlinedButton.icon(
+            onPressed: onEdit,
+            icon: const Icon(Icons.edit_outlined),
+            label: const Text('Edit'),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: ElevatedButton.icon(
+            onPressed: onFullscreen,
+            icon: const Icon(Icons.fullscreen),
+            label: const Text('Fullscreen'),
+          ),
+        ),
+      ],
     );
   }
 
@@ -259,7 +757,7 @@ class _DetailContent extends StatelessWidget {
   }
 }
 
-// MARK: - Fullscreen Countdown (Simplified - keep your existing code)
+// MARK: - Fullscreen Countdown
 
 class _FullscreenCountdown extends ConsumerStatefulWidget {
   final Taning taning;
@@ -311,6 +809,8 @@ class _FullscreenCountdownState extends ConsumerState<_FullscreenCountdown> with
     });
   }
 
+  
+
   @override
   Widget build(BuildContext context) {
     final color = widget.taning.color.toColor();
@@ -330,16 +830,15 @@ class _FullscreenCountdownState extends ConsumerState<_FullscreenCountdown> with
             children: [
               // Exit hint
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
+                  color: Colors.white.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.tap, color: Colors.white54, size: 16),
+                    Icon(Icons.touch_app, color: Colors.white54, size: 16),
                     SizedBox(width: 8),
                     Text(
                       'Tap to exit',
@@ -353,13 +852,12 @@ class _FullscreenCountdownState extends ConsumerState<_FullscreenCountdown> with
               Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.15),
+                  color: color.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(icon, color: color, size: 48),
               ),
               const SizedBox(height: 24),
-              // Title
               Text(
                 widget.taning.title,
                 style: const TextStyle(
@@ -436,8 +934,7 @@ class _FullscreenCountdownState extends ConsumerState<_FullscreenCountdown> with
                     const SizedBox(height: 16),
                     if (_currentState.targetDate != null)
                       Text(
-                        CountdownFormatter.formatDate(
-                            _currentState.targetDate!),
+                        CountdownFormatter.formatDate(_currentState.targetDate!),
                         style: const TextStyle(
                           color: Colors.grey,
                           fontSize: 18,
@@ -447,10 +944,10 @@ class _FullscreenCountdownState extends ConsumerState<_FullscreenCountdown> with
                 ),
               const Spacer(),
               // Progress
-              if (_currentState.progressPercentage != null &&
+              if (_currentState.progressPercentage != null && 
                   !_currentState.isFinished &&
                   !_currentState.isOverdue)
-                Container(
+                SizedBox(
                   width: 200,
                   child: Column(
                     children: [
@@ -479,8 +976,7 @@ class _FullscreenCountdownState extends ConsumerState<_FullscreenCountdown> with
                   OutlinedButton.icon(
                     onPressed: widget.onExit,
                     icon: const Icon(Icons.close, color: Colors.white),
-                    label: const Text('Exit',
-                        style: TextStyle(color: Colors.white)),
+                    label: const Text('Exit', style: TextStyle(color: Colors.white)),
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: Colors.white54),
                     ),
@@ -489,11 +985,10 @@ class _FullscreenCountdownState extends ConsumerState<_FullscreenCountdown> with
                   if (!_currentState.isFinished && !_currentState.isOverdue)
                     OutlinedButton.icon(
                       onPressed: () {
-                        // TODO: Share
+                        ShareService.shareTaning(context, widget.taning);
                       },
                       icon: const Icon(Icons.share, color: Colors.white),
-                      label: const Text('Share',
-                          style: TextStyle(color: Colors.white)),
+                      label: const Text('Share', style: TextStyle(color: Colors.white)),
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(color: Colors.white54),
                       ),

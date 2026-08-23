@@ -1,5 +1,4 @@
 import 'package:taning/database/app_database.dart';
-import 'package:taning/database/daos/taning_dao.dart';
 import 'package:taning/features/tanings/domain/entities/taning.dart';
 import 'package:taning/features/tanings/data/mappers/taning_mapper.dart';
 

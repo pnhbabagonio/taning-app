@@ -443,7 +443,6 @@
       - logger.dart
       - notification_service.dart
       - service_locator.dart
-      - share_service.dart
       - timezone_service.dart
       - widget_service.dart
     - utils
@@ -529,7 +528,6 @@
           - create_screen.dart
           - create_view_model.dart
           - detail_screen.dart
-          - edit_screen.dart
           - home_screen.dart
           - settings_screen.dart
         - view_models

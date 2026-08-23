@@ -144,8 +144,7 @@ class _StandardCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isFinished = state.isFinished || state.isOverdue;
-    final isUpcoming = state.isUpcoming;
-    final isActive = state.isActive;
+
 
     return Container(
       padding: const EdgeInsets.all(20),

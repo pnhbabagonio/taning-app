@@ -47,6 +47,9 @@ dependencies:
   
   # Notifications
   flutter_local_notifications: ^17.0.0
+
+  # Background processing
+  workmanager: ^0.5.1
   
   # Firebase (Optional - for future)
   firebase_core: ^2.29.0
