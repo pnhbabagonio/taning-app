@@ -1,17 +1,58 @@
-# taning
+# Taning — Know Your Taning
 
-A new Flutter project.
+[![Flutter](https://img.shields.io/badge/Flutter-3.16.0-blue.svg)](https://flutter.dev)
+[![Dart](https://img.shields.io/badge/Dart-3.0.0-blue.svg)](https://dart.dev)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-## Getting Started
+**Taning** is a beautiful countdown app inspired by the Filipino concept of "taning" — a fixed deadline, time limit, or allotted period. It makes time visible, tangible, and emotionally meaningful.
 
-This project is a starting point for a Flutter application.
+## 🌟 Features
 
-A few resources to get you started if this is your first Flutter project:
+### Core Features
+- **Multiple Countdown Types**: Countdown to a date, duration tracking, count up, and recurring events
+- **Beautiful Cards**: Visually rich countdown cards with progress indicators
+- **Real-time Updates**: Countdowns update in real-time with smooth animations
+- **Customization**: Personalize colors, icons, themes, and countdown styles
+- **Notifications**: Get reminders before your important events
+- **Home Screen Widgets**: Android and iOS widgets to see your countdown at a glance
+- **Dark Mode**: Full dark mode support with proper contrast
+- **Accessibility**: Screen reader support, dynamic text, and high contrast
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+### Countdown Types
+| Type | Description | Example |
+|------|-------------|---------|
+| 📅 Countdown | Count down to a specific date/time | "14 days until vacation" |
+| ⏱️ Duration | Track progress through a fixed period | "Day 14 of 30" |
+| 📈 Count Up | Count time since a starting date | "14 days since I started" |
+| 🔄 Recurring | Events that repeat regularly | "Rent due every month" |
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 📱 Screenshots
+
+| Home Screen | Create Flow | Detail Screen | Widget |
+|-------------|-------------|---------------|--------|
+| (Screenshot) | (Screenshot) | (Screenshot) | (Screenshot) |
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Flutter 3.16.0 or higher
+- Dart 3.0.0 or higher
+- Android Studio / VS Code with Flutter extensions
+- Xcode (for iOS development)
+- Android SDK (for Android development)
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/taning-app/taning.git
+cd taning
+
+# Install dependencies
+flutter pub get
+
+# Generate code
+flutter pub run build_runner build --delete-conflicting-outputs
+
+# Run the app
+flutter run

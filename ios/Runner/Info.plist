@@ -82,3 +82,49 @@
 <array>
     <string>group.com.taning.app</string>
 </array>
+
+<key>CFBundleDisplayName</key>
+<string>Taning</string>
+<key>CFBundleIdentifier</key>
+<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+<key>CFBundleName</key>
+<string>Taning</string>
+<key>CFBundleShortVersionString</key>
+<string>1.0.0</string>
+<key>CFBundleVersion</key>
+<string>1</string>
+
+<!-- Privacy - Camera -->
+<key>NSCameraUsageDescription</key>
+<string>Used to add photos to your Tanings</string>
+
+<!-- Privacy - Notifications -->
+<key>NSUserNotificationsUsageDescription</key>
+<string>Remind you when your Tanings are approaching</string>
+
+<!-- Privacy - Photos -->
+<key>NSPhotoLibraryUsageDescription</key>
+<string>Used to add photos to your Tanings</string>
+
+<!-- Background Modes -->
+<key>UIBackgroundModes</key>
+<array>
+    <string>fetch</string>
+    <string>remote-notification</string>
+</array>
+
+<!-- App Groups for Widgets -->
+<key>com.apple.security.application-groups</key>
+<array>
+    <string>group.com.taning.app</string>
+</array>
+
+# Add to ios/Runner/Info.plist for different environments
+# Development
+PRODUCT_BUNDLE_IDENTIFIER = com.taning.app.dev
+
+# Staging
+PRODUCT_BUNDLE_IDENTIFIER = com.taning.app.staging
+
+# Production
+PRODUCT_BUNDLE_IDENTIFIER = com.taning.app
