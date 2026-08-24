@@ -2,6 +2,7 @@ import 'package:taning/core/services/logger.dart';
 import 'package:taning/core/services/timezone_service.dart';
 import 'package:taning/core/services/notification_service.dart';
 import 'package:taning/core/services/background_service.dart';
+import 'package:taning/core/services/analytics_service.dart';
 import 'package:taning/database/app_database.dart';
 
 Future<void> bootstrap() async {
@@ -22,6 +23,10 @@ Future<void> bootstrap() async {
   
   // Register periodic sync
   await BackgroundService.registerPeriodicTask();
+  
+  // Initialize analytics
+  AnalyticsService().initialize();
+  AnalyticsService().logAppOpened();
   
   LoggerService.info('App initialized successfully');
 }
