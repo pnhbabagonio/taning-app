@@ -47,6 +47,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         name: 'settings',
         builder: (context, state) => const SettingsScreen(),
       ),
+      GoRoute(
+      path: '/widget-config',
+      name: 'widget-config',
+      builder: (context, state) => const WidgetConfigScreen(),
+    ),
     ],
     redirect: (context, state) {
       return null;

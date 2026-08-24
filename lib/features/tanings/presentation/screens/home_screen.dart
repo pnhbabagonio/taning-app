@@ -104,6 +104,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           },
           tooltip: 'Settings',
         ),
+        IconButton(
+  icon: const Icon(Icons.widgets_outlined),
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const WidgetConfigScreen(),
+      ),
+    );
+  },
+  tooltip: 'Widget Settings',
+),
       ],
     );
   }

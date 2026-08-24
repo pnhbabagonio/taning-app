@@ -77,3 +77,8 @@
 
 <key>PermissionGroupNotification</key>
 <string>Please allow notifications to get reminders for your Tanings.</string>
+
+<key>com.apple.security.application-groups</key>
+<array>
+    <string>group.com.taning.app</string>
+</array>

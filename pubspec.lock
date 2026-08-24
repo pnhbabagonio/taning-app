@@ -504,6 +504,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.0.0"
+  glance:
+    dependency: "direct main"
+    description:
+      name: glance
+      sha256: a9bdcec70cabd69bf480b4d5aae0b6f537491c16b8f9dd9d03de8a6c38dbb852
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.6.0"
   glob:
     dependency: transitive
     description:
