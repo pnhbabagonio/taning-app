@@ -1,5 +1,4 @@
-import 'dart:developer';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 
 class PerformanceUtils {
   static bool _isPerformanceMode = false;
@@ -72,7 +71,7 @@ class PerformanceUtils {
 }
 
 /// Rebuild tracker mixin for widgets
-mixin RebuildTrackerMixin {
+mixin RebuildTrackerMixin on State<StatefulWidget> {
   String get widgetName;
   
   @override

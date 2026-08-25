@@ -22,7 +22,7 @@ class NotificationScheduler {
     }
 
     // Get notification times based on type
-    final times = _calculateNotificationTimes(taning);
+    final times = calculateNotificationTimes(taning);
     if (times.isEmpty) return;
 
     // Schedule each notification
@@ -51,7 +51,7 @@ class NotificationScheduler {
     }
   }
 
-  List<NotificationTime> _calculateNotificationTimes(Taning taning) {
+  List<NotificationTime> calculateNotificationTimes(Taning taning) {
     final times = <NotificationTime>[];
     final settings = taning.notificationSettings;
 
@@ -139,8 +139,6 @@ class NotificationScheduler {
   }
 
   List<NotificationTime> _calculateDurationTimes(Taning taning) {
-    final target = taning.endDate!;
-    final settings = taning.notificationSettings;
     final times = <NotificationTime>[];
 
     // Same as countdown plus progress notifications
@@ -159,7 +157,6 @@ class NotificationScheduler {
     if (taning.startDate != null) {
       final start = taning.startDate!;
       final now = DateTime.now();
-      final elapsed = now.difference(start);
 
       // Milestones: 7 days, 30 days, 100 days, 365 days
       final milestones = [7, 30, 100, 365];
@@ -251,12 +248,12 @@ class NotificationScheduler {
         final progress = state.progressPercentage ?? 0;
         final percent = (progress * 100).toStringAsFixed(0);
         if (taning.type == TaningType.duration) {
-          return 'Day ${state.currentDay} of ${state.totalDays} - ${percent}% complete! Keep going! 💪';
+          return 'Day ${state.currentDay} of ${state.totalDays} - $percent% complete! Keep going! 💪';
         }
-        return '${percent}% complete! Keep going! 💪';
+        return '$percent% complete! Keep going! 💪';
       case NotificationType.milestone:
         final elapsed = state.elapsedDuration?.inDays ?? 0;
-        return '${elapsed} days since you started! Keep up the momentum! 🚀';
+        return '$elapsed days since you started! Keep up the momentum! 🚀';
     }
   }
 }

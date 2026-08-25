@@ -60,9 +60,9 @@ class CountdownFormatter {
     final days = difference.inDays;
     if (days == 0) return 'Today';
     if (days == 1) return 'Tomorrow';
-    if (days < 7) return '${days} days';
+    if (days < 7) return '$days days';
     if (days < 14) return 'Next week';
-    if (days < 30) return '${days} days';
+    if (days < 30) return '$days days';
     if (days < 60) return '${(days / 7).round()} weeks';
     if (days < 365) return '${(days / 30).round()} months';
     return '${(days / 365).round()} years';
@@ -76,10 +76,10 @@ class CountdownFormatter {
     final seconds = duration.inSeconds.remainder(60);
     
     final parts = <String>[];
-    if (days > 0) parts.add('${days} day${days > 1 ? 's' : ''}');
-    if (hours > 0) parts.add('${hours} hour${hours > 1 ? 's' : ''}');
-    if (minutes > 0) parts.add('${minutes} minute${minutes > 1 ? 's' : ''}');
-    if (seconds > 0 && parts.isEmpty) parts.add('${seconds} second${seconds > 1 ? 's' : ''}');
+    if (days > 0) parts.add('$days day${days > 1 ? 's' : ''}');
+    if (hours > 0) parts.add('$hours hour${hours > 1 ? 's' : ''}');
+    if (minutes > 0) parts.add('$minutes minute${minutes > 1 ? 's' : ''}');
+    if (seconds > 0 && parts.isEmpty) parts.add('$seconds second${seconds > 1 ? 's' : ''}');
     
     if (parts.isEmpty) return 'Just now';
     

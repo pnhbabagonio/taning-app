@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:taning/features/tanings/domain/entities/taning.dart';
 import 'package:taning/features/tanings/domain/engines/countdown_engine.dart';
@@ -11,7 +11,7 @@ class WidgetBridge {
   
   static Future<void> updateWidgetData(Taning taning) async {
     try {
-      final engine = CountdownEngine();
+      const engine = CountdownEngine();
       final state = engine.calculate(
         now: DateTime.now(),
         taning: taning,

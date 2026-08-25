@@ -175,7 +175,7 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
   void _createTaning() async {
     try {
       final taning = _createViewModel.buildTaning();
-      await ref.read(tandingRepositoryProvider).save(taning);
+      await ref.read(taningRepositoryProvider).save(taning);
 
       if (mounted) {
         Navigator.pop(context);

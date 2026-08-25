@@ -25,7 +25,7 @@ final localDataSourceProvider = Provider<LocalTaningDataSource>((ref) {
 });
 
 // Repository provider
-final tandingRepositoryProvider = Provider<TaningRepository>((ref) {
+final taningRepositoryProvider = Provider<TaningRepository>((ref) {
   final dataSource = ref.watch(localDataSourceProvider);
   return TaningRepositoryImpl(dataSource);
 });
@@ -37,18 +37,18 @@ final countdownEngineProvider = Provider<CountdownEngine>((ref) {
 
 // Active Tanings provider
 final activeTaningsProvider = StreamProvider<List<Taning>>((ref) {
-  final repository = ref.watch(tandingRepositoryProvider);
+  final repository = ref.watch(taningRepositoryProvider);
   return repository.watchActive();
 });
 
 // All Tanings provider
 final allTaningsProvider = StreamProvider<List<Taning>>((ref) {
-  final repository = ref.watch(tandingRepositoryProvider);
+  final repository = ref.watch(taningRepositoryProvider);
   return repository.watchAll();
 });
 
 // Single Taning provider
 final taningProvider = FutureProvider.family<Taning?, String>((ref, id) async {
-  final repository = ref.watch(tandingRepositoryProvider);
+  final repository = ref.watch(taningRepositoryProvider);
   return repository.getById(id);
 });

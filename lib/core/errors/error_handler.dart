@@ -99,20 +99,7 @@ class _ErrorBoundaryState extends State<ErrorBoundary> {
       return widget.fallback ?? _buildDefaultFallback(context);
     }
     
-    return ErrorWidget.builder(
-      (error) {
-        _error = error;
-        if (mounted) {
-          ErrorHandler.handleError(
-            context,
-            error,
-            contextInfo: 'Widget error',
-          );
-        }
-        return widget.fallback ?? _buildDefaultFallback(context);
-      },
-      child: widget.child,
-    );
+    return widget.child;
   }
 
   Widget _buildDefaultFallback(BuildContext context) {

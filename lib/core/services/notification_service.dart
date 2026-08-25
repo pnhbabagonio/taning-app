@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
@@ -44,7 +46,8 @@ class NotificationService {
       await _plugin.initialize(
         settings,
         onDidReceiveNotificationResponse: _onNotificationTap,
-        onDidReceiveBackgroundNotificationResponse: _onNotificationTapBackground,
+        onDidReceiveBackgroundNotificationResponse:
+            _onNotificationTapBackground,
       );
 
       _isInitialized = true;
@@ -56,13 +59,13 @@ class NotificationService {
 
   Future<void> requestPermissions() async {
     try {
-      final iosSettings = DarwinInitializationSettings(
+      const iosSettings = DarwinInitializationSettings(
         requestAlertPermission: true,
         requestBadgePermission: true,
         requestSoundPermission: true,
       );
 
-      final settings = InitializationSettings(
+      const settings = InitializationSettings(
         iOS: iosSettings,
       );
 
@@ -107,27 +110,26 @@ class NotificationService {
         colorized: true,
         styleInformation: const BigTextStyleInformation(''),
         actions: [
-          AndroidNotificationAction(
+          const AndroidNotificationAction(
             'snooze',
             'Snooze 15m',
-            icon: '@mipmap/ic_launcher',
+            icon: DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
           ),
-          AndroidNotificationAction(
+          const AndroidNotificationAction(
             'mark_done',
             'Mark as Done',
-            icon: '@mipmap/ic_launcher',
+            icon: DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
           ),
         ],
       );
 
-      final iosDetails = DarwinNotificationDetails(
+      const iosDetails = DarwinNotificationDetails(
         sound: 'default.wav',
         presentAlert: true,
         presentBadge: true,
         presentSound: true,
         categoryIdentifier: 'taning_category',
         interruptionLevel: InterruptionLevel.active,
-        relevanceScore: 0.5,
       );
 
       final details = NotificationDetails(
@@ -147,7 +149,7 @@ class NotificationService {
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        payload: payload != null ? payload.toString() : null,
+        payload: payload?.toString(),
         matchDateTimeComponents: DateTimeComponents.time,
       );
 
@@ -198,7 +200,7 @@ class NotificationService {
         importance: Importance.max,
         priority: Priority.max,
         icon: '@mipmap/ic_launcher',
-        color: const Color(0xFF4F46E5),
+        color: Color(0xFF4F46E5),
         colorized: true,
       );
 
@@ -220,7 +222,7 @@ class NotificationService {
         title,
         body,
         details,
-        payload: payload != null ? payload.toString() : null,
+        payload: payload?.toString(),
       );
 
       LoggerService.info('Immediate notification shown: $title');
@@ -237,7 +239,7 @@ class NotificationService {
   void _onNotificationTap(NotificationResponse response) {
     // Handle notification tap in foreground
     LoggerService.info('Notification tapped: ${response.payload}');
-    
+
     if (response.payload != null) {
       // Parse payload and navigate
       // TODO: Handle navigation from notification

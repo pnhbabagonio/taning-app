@@ -2,11 +2,9 @@
 import 'dart:developer' as developer;
 
 class LoggerService {
-  static bool _isInitialized = false;
   static bool _debugMode = false;
   
   static void initialize({bool debugMode = true}) {
-    _isInitialized = true;
     _debugMode = debugMode;
   }
   

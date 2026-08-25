@@ -1,3 +1,5 @@
+// ignore_for_file: non_const_argument_for_const_parameter
+
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,9 +8,9 @@ import 'package:taning/core/utils/countdown_formatter.dart';
 import 'package:taning/core/services/share_service.dart';
 import 'package:taning/features/tanings/domain/entities/countdown_state.dart';
 import 'package:taning/features/tanings/domain/entities/taning.dart';
-import 'package:taning/features/tanings/domain/engines/countdown_engine.dart';
 import 'package:taning/features/tanings/presentation/providers/taning_providers.dart';
 import 'package:taning/features/tanings/presentation/widgets/progress_indicators.dart';
+import 'package:taning/features/notifications/presentation/screens/notification_settings_screen.dart';
 
 class DetailScreen extends ConsumerStatefulWidget {
   final String id;
@@ -19,7 +21,8 @@ class DetailScreen extends ConsumerStatefulWidget {
   ConsumerState<DetailScreen> createState() => _DetailScreenState();
 }
 
-class _DetailScreenState extends ConsumerState<DetailScreen> with SingleTickerProviderStateMixin {
+class _DetailScreenState extends ConsumerState<DetailScreen>
+    with SingleTickerProviderStateMixin {
   late final Ticker _ticker;
   CountdownState _currentState = const CountdownState(
     status: CountdownStatus.active,
@@ -110,6 +113,7 @@ class _DetailScreenState extends ConsumerState<DetailScreen> with SingleTickerPr
                 onDelete: () => _deleteTaning(taning.id),
                 onArchive: () => _archiveTaning(taning.id),
                 onComplete: () => _completeTaning(taning.id),
+                onNotificationSettings: () => _openNotificationSettings(taning),
               );
       },
       loading: () => const Scaffold(
@@ -182,7 +186,7 @@ class _DetailScreenState extends ConsumerState<DetailScreen> with SingleTickerPr
     );
 
     if (confirmed == true) {
-      await ref.read(tandingRepositoryProvider).delete(id);
+      await ref.read(taningRepositoryProvider).delete(id);
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -196,7 +200,7 @@ class _DetailScreenState extends ConsumerState<DetailScreen> with SingleTickerPr
   }
 
   void _archiveTaning(String id) async {
-    await ref.read(tandingRepositoryProvider).archive(id);
+    await ref.read(taningRepositoryProvider).archive(id);
     if (mounted) {
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -209,7 +213,7 @@ class _DetailScreenState extends ConsumerState<DetailScreen> with SingleTickerPr
   }
 
   void _completeTaning(String id) async {
-    await ref.read(tandingRepositoryProvider).markCompleted(id);
+    await ref.read(taningRepositoryProvider).markCompleted(id);
     if (mounted) {
       ref.invalidate(taningProvider(id));
       _updateState();
@@ -224,13 +228,13 @@ class _DetailScreenState extends ConsumerState<DetailScreen> with SingleTickerPr
   }
 
   void _openNotificationSettings(Taning taning) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => NotificationSettingsScreen(taningId: taning.id),
-    ),
-  );
-}
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => NotificationSettingsScreen(taningId: taning.id),
+      ),
+    );
+  }
 }
 
 // MARK: - Detail Content
@@ -243,6 +247,7 @@ class _DetailContent extends StatelessWidget {
   final VoidCallback onDelete;
   final VoidCallback onArchive;
   final VoidCallback onComplete;
+  final VoidCallback onNotificationSettings;
 
   const _DetailContent({
     required this.taning,
@@ -252,6 +257,7 @@ class _DetailContent extends StatelessWidget {
     required this.onDelete,
     required this.onArchive,
     required this.onComplete,
+    required this.onNotificationSettings,
   });
 
   @override
@@ -322,7 +328,7 @@ class _DetailContent extends StatelessWidget {
                 onDelete();
                 break;
               case 'notifications':
-                _openNotificationSettings(taning);
+                onNotificationSettings();
                 break;
             }
           },
@@ -370,16 +376,16 @@ class _DetailContent extends StatelessWidget {
               ),
             ),
             // In detail_screen.dart - add this to popup menu items
-const PopupMenuItem(
-  value: 'notifications',
-  child: Row(
-    children: [
-      Icon(Icons.notifications_outlined),
-      SizedBox(width: 12),
-      Text('Notifications'),
-    ],
-  ),
-),
+            const PopupMenuItem(
+              value: 'notifications',
+              child: Row(
+                children: [
+                  Icon(Icons.notifications_outlined),
+                  SizedBox(width: 12),
+                  Text('Notifications'),
+                ],
+              ),
+            ),
           ],
         ),
       ],
@@ -553,7 +559,7 @@ const PopupMenuItem(
   String _getMainDisplayText() {
     final display = state.formattedRemaining;
     if (display.isEmpty) return '0s';
-    
+
     final numbers = RegExp(r'\d+').allMatches(display);
     if (numbers.isNotEmpty) {
       return numbers.first.group(0) ?? display;
@@ -564,7 +570,7 @@ const PopupMenuItem(
   String _getUnitText() {
     final display = state.formattedRemaining;
     if (display.isEmpty) return 'seconds';
-    
+
     if (display.contains('d')) return 'days';
     if (display.contains('h')) return 'hours';
     if (display.contains('m')) return 'minutes';
@@ -771,10 +777,12 @@ class _FullscreenCountdown extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<_FullscreenCountdown> createState() => _FullscreenCountdownState();
+  ConsumerState<_FullscreenCountdown> createState() =>
+      _FullscreenCountdownState();
 }
 
-class _FullscreenCountdownState extends ConsumerState<_FullscreenCountdown> with SingleTickerProviderStateMixin {
+class _FullscreenCountdownState extends ConsumerState<_FullscreenCountdown>
+    with SingleTickerProviderStateMixin {
   late final Ticker _ticker;
   CountdownState _currentState = const CountdownState(
     status: CountdownStatus.active,
@@ -809,8 +817,6 @@ class _FullscreenCountdownState extends ConsumerState<_FullscreenCountdown> with
     });
   }
 
-  
-
   @override
   Widget build(BuildContext context) {
     final color = widget.taning.color.toColor();
@@ -830,7 +836,8 @@ class _FullscreenCountdownState extends ConsumerState<_FullscreenCountdown> with
             children: [
               // Exit hint
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
@@ -934,7 +941,8 @@ class _FullscreenCountdownState extends ConsumerState<_FullscreenCountdown> with
                     const SizedBox(height: 16),
                     if (_currentState.targetDate != null)
                       Text(
-                        CountdownFormatter.formatDate(_currentState.targetDate!),
+                        CountdownFormatter.formatDate(
+                            _currentState.targetDate!),
                         style: const TextStyle(
                           color: Colors.grey,
                           fontSize: 18,
@@ -944,7 +952,7 @@ class _FullscreenCountdownState extends ConsumerState<_FullscreenCountdown> with
                 ),
               const Spacer(),
               // Progress
-              if (_currentState.progressPercentage != null && 
+              if (_currentState.progressPercentage != null &&
                   !_currentState.isFinished &&
                   !_currentState.isOverdue)
                 SizedBox(
@@ -976,7 +984,8 @@ class _FullscreenCountdownState extends ConsumerState<_FullscreenCountdown> with
                   OutlinedButton.icon(
                     onPressed: widget.onExit,
                     icon: const Icon(Icons.close, color: Colors.white),
-                    label: const Text('Exit', style: TextStyle(color: Colors.white)),
+                    label: const Text('Exit',
+                        style: TextStyle(color: Colors.white)),
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: Colors.white54),
                     ),
@@ -988,7 +997,8 @@ class _FullscreenCountdownState extends ConsumerState<_FullscreenCountdown> with
                         ShareService.shareTaning(context, widget.taning);
                       },
                       icon: const Icon(Icons.share, color: Colors.white),
-                      label: const Text('Share', style: TextStyle(color: Colors.white)),
+                      label: const Text('Share',
+                          style: TextStyle(color: Colors.white)),
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(color: Colors.white54),
                       ),

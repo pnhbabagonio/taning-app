@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:taning/features/tanings/domain/entities/taning.dart';
 import 'package:taning/core/services/notification_service.dart';
+import 'package:taning/features/tanings/presentation/providers/taning_providers.dart';
 
 class NotificationSettingsScreen extends ConsumerStatefulWidget {
   final String taningId;
@@ -199,7 +200,7 @@ class _NotificationSettingsScreenState
           notificationSettings: _settings,
           updatedAt: DateTime.now(),
         );
-        await ref.read(tandingRepositoryProvider).save(updated);
+        await ref.read(taningRepositoryProvider).save(updated);
         
         // Reschedule notifications
         // await NotificationScheduler().scheduleForTaning(updated);

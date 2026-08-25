@@ -1,3 +1,5 @@
+// ignore_for_file: non_const_argument_for_const_parameter
+
 import 'package:flutter/material.dart';
 import 'package:taning/features/tanings/domain/entities/taning.dart';
 import 'package:taning/features/tanings/presentation/view_models/create_view_model.dart';
@@ -190,19 +192,25 @@ class _IconSelector extends StatelessWidget {
       const TaningIcon(codePoint: 0xE8ED, family: 'MaterialIcons'), // flight
       const TaningIcon(codePoint: 0xE8F0, family: 'MaterialIcons'), // cake
       const TaningIcon(codePoint: 0xE8F5, family: 'MaterialIcons'), // school
-      const TaningIcon(codePoint: 0xE8F8, family: 'MaterialIcons'), // assignment
-      const TaningIcon(codePoint: 0xE8FB, family: 'MaterialIcons'), // fitness_center
+      const TaningIcon(
+          codePoint: 0xE8F8, family: 'MaterialIcons'), // assignment
+      const TaningIcon(
+          codePoint: 0xE8FB, family: 'MaterialIcons'), // fitness_center
       const TaningIcon(codePoint: 0xE8FE, family: 'MaterialIcons'), // favorite
-      const TaningIcon(codePoint: 0xE8E9, family: 'MaterialIcons'), // event_note
+      const TaningIcon(
+          codePoint: 0xE8E9, family: 'MaterialIcons'), // event_note
       const TaningIcon(codePoint: 0xE8FD, family: 'MaterialIcons'), // star
       const TaningIcon(codePoint: 0xE8EF, family: 'MaterialIcons'), // favorite
-      const TaningIcon(codePoint: 0xE8F1, family: 'MaterialIcons'), // celebration
+      const TaningIcon(
+          codePoint: 0xE8F1, family: 'MaterialIcons'), // celebration
       const TaningIcon(codePoint: 0xE8F2, family: 'MaterialIcons'), // event
-      const TaningIcon(codePoint: 0xE8F3, family: 'MaterialIcons'), // calendar_month
+      const TaningIcon(
+          codePoint: 0xE8F3, family: 'MaterialIcons'), // calendar_month
       const TaningIcon(codePoint: 0xE8F4, family: 'MaterialIcons'), // schedule
       const TaningIcon(codePoint: 0xE8F6, family: 'MaterialIcons'), // school
       const TaningIcon(codePoint: 0xE8F7, family: 'MaterialIcons'), // work
-      const TaningIcon(codePoint: 0xE8F9, family: 'MaterialIcons'), // emoji_events
+      const TaningIcon(
+          codePoint: 0xE8F9, family: 'MaterialIcons'), // emoji_events
     ];
 
     return Wrap(
@@ -216,15 +224,20 @@ class _IconSelector extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: isSelected ? Theme.of(context).primaryColor : Colors.grey.shade100,
+              color: isSelected
+                  ? Theme.of(context).primaryColor
+                  : Colors.grey.shade100,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: isSelected ? Theme.of(context).primaryColor : Colors.transparent,
+                color: isSelected
+                    ? Theme.of(context).primaryColor
+                    : Colors.transparent,
                 width: 2,
               ),
             ),
             child: Icon(
-              IconData(icon.codePoint, fontFamily: icon.family ?? 'MaterialIcons'),
+              IconData(icon.codePoint,
+                  fontFamily: icon.family ?? 'MaterialIcons'),
               color: isSelected ? Colors.white : Colors.grey.shade700,
               size: 24,
             ),
@@ -248,7 +261,7 @@ class _ColorSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final presets = const [
+    const presets = [
       TaningColor(value: 0xFF4F46E5, name: 'Indigo'),
       TaningColor(value: 0xFF7C3AED, name: 'Purple'),
       TaningColor(value: 0xFFEC4899, name: 'Pink'),
@@ -275,7 +288,9 @@ class _ColorSelector extends StatelessWidget {
               color: Color(color.value),
               shape: BoxShape.circle,
               border: Border.all(
-                color: isSelected ? Theme.of(context).primaryColor : Colors.transparent,
+                color: isSelected
+                    ? Theme.of(context).primaryColor
+                    : Colors.transparent,
                 width: 3,
               ),
             ),
@@ -303,13 +318,25 @@ class _ThemeSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themes = [
-      {'theme': TaningTheme.midnight, 'label': 'Midnight', 'color': Colors.indigo},
-      {'theme': TaningTheme.sunrise, 'label': 'Sunrise', 'color': Colors.orange},
+      {
+        'theme': TaningTheme.midnight,
+        'label': 'Midnight',
+        'color': Colors.indigo
+      },
+      {
+        'theme': TaningTheme.sunrise,
+        'label': 'Sunrise',
+        'color': Colors.orange
+      },
       {'theme': TaningTheme.forest, 'label': 'Forest', 'color': Colors.green},
       {'theme': TaningTheme.ocean, 'label': 'Ocean', 'color': Colors.blue},
       {'theme': TaningTheme.sakura, 'label': 'Sakura', 'color': Colors.pink},
       {'theme': TaningTheme.mono, 'label': 'Mono', 'color': Colors.grey},
-      {'theme': TaningTheme.filipino, 'label': 'Filipino', 'color': Colors.amber},
+      {
+        'theme': TaningTheme.filipino,
+        'label': 'Filipino',
+        'color': Colors.amber
+      },
     ];
 
     return Wrap(
@@ -322,7 +349,7 @@ class _ThemeSelector extends StatelessWidget {
           label: Text(themeData['label'] as String),
           selected: isSelected,
           onSelected: (_) => onThemeSelected(themeData['theme'] as TaningTheme),
-          selectedColor: color.withOpacity(0.2),
+          selectedColor: color.withValues(alpha: 0.2),
           backgroundColor: Colors.grey.shade100,
           avatar: CircleAvatar(
             backgroundColor: color,
@@ -349,10 +376,26 @@ class _StyleSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     final styles = [
       {'style': CountdownStyle.simple, 'label': 'Simple', 'example': '14d'},
-      {'style': CountdownStyle.detailed, 'label': 'Detailed', 'example': '14d 6h 42m'},
-      {'style': CountdownStyle.full, 'label': 'Full', 'example': '14d 6h 42m 12s'},
-      {'style': CountdownStyle.progress, 'label': 'Progress', 'example': 'Day 14/30'},
-      {'style': CountdownStyle.calendar, 'label': 'Calendar', 'example': '14d • Aug 24'},
+      {
+        'style': CountdownStyle.detailed,
+        'label': 'Detailed',
+        'example': '14d 6h 42m'
+      },
+      {
+        'style': CountdownStyle.full,
+        'label': 'Full',
+        'example': '14d 6h 42m 12s'
+      },
+      {
+        'style': CountdownStyle.progress,
+        'label': 'Progress',
+        'example': 'Day 14/30'
+      },
+      {
+        'style': CountdownStyle.calendar,
+        'label': 'Calendar',
+        'example': '14d • Aug 24'
+      },
     ];
 
     return Wrap(
@@ -363,7 +406,8 @@ class _StyleSelector extends StatelessWidget {
         return FilterChip(
           label: Text(styleData['label'] as String),
           selected: isSelected,
-          onSelected: (_) => onStyleSelected(styleData['style'] as CountdownStyle),
+          onSelected: (_) =>
+              onStyleSelected(styleData['style'] as CountdownStyle),
           avatar: Text(
             styleData['example'] as String,
             style: const TextStyle(fontSize: 10),

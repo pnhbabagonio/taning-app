@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:taning/features/tanings/presentation/providers/taning_providers.dart';
 import 'package:taning/features/tanings/presentation/widgets/taning_list.dart';
 import 'package:taning/shared/widgets/empty_state.dart';
+import 'package:taning/features/widgets/presentation/screens/widget_config_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});

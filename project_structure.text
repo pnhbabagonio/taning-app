@@ -227,6 +227,8 @@
         - scripts
           - recordToolUse.ps1
           - recordToolUse.sh
+  - workflows
+    - release.yml
 - .gitignore
 - .idea
   - libraries
@@ -266,6 +268,8 @@
       - gc.properties
   - app
     - build.gradle.kts
+    - keystore
+    - proguard-rules.pro
     - src
       - debug
         - AndroidManifest.xml
@@ -279,6 +283,10 @@
         - kotlin
           - com
             - taning
+              - app
+                - MainActivity.kt
+                - TaningWidget.kt
+                - WidgetBridge.kt
               - taning
                 - MainActivity.kt
         - res
@@ -286,6 +294,8 @@
             - launch_background.xml
           - drawable-v21
             - launch_background.xml
+          - layout
+            - taning_widget_layout.xml
           - mipmap-hdpi
             - ic_launcher.png
           - mipmap-mdpi
@@ -300,6 +310,8 @@
             - styles.xml
           - values-night
             - styles.xml
+          - xml
+            - taning_widget_info.xml
       - profile
         - AndroidManifest.xml
   - build.gradle.kts
@@ -323,6 +335,9 @@
   - native_assets
     - windows
       - native_assets.json
+  - reports
+    - problems
+      - problems-report.html
   - test_cache
     - build
       - 0ea6338a9744699c4765127c07d5f7ae.cache.dill.track.dill
@@ -359,6 +374,7 @@
     - flutter_export_environment.sh
     - Generated.xcconfig
     - Release.xcconfig
+  - Podfile
   - Runner
     - AppDelegate.swift
     - Assets.xcassets
@@ -410,6 +426,9 @@
       - WorkspaceSettings.xcsettings
   - RunnerTests
     - RunnerTests.swift
+  - TaningWidget
+    - Info.plist
+    - TaningWidget.swift
 - lib
   - app
     - app.dart
@@ -440,15 +459,20 @@
       - duration_extensions.dart
     - services
       - analytics_service.dart
+      - background_service.dart
       - logger.dart
+      - notification_scheduler.dart
       - notification_service.dart
       - service_locator.dart
+      - share_service.dart
       - timezone_service.dart
       - widget_service.dart
     - utils
+      - accessibility_utils.dart
       - countdown_formatter.dart
       - formatters.dart
       - logger.dart
+      - performance_utils.dart
       - validators.dart
   - data
   - database
@@ -482,6 +506,14 @@
       - app_typography.dart
       - text_styles.dart
   - features
+    - notifications
+      - presentation
+        - providers
+          - notification_providers.dart
+        - screens
+          - notification_settings_screen.dart
+        - widgets
+          - notification_permission_banner.dart
     - tanings
       - data
         - datasources
@@ -528,6 +560,7 @@
           - create_screen.dart
           - create_view_model.dart
           - detail_screen.dart
+          - edit_screen.dart
           - home_screen.dart
           - settings_screen.dart
         - view_models
@@ -544,13 +577,20 @@
             - title_step.dart
             - type_step.dart
           - preview_card.dart
-          - progress_indicator.dart
+          - progress_indicators.dart
           - taning_card.dart
           - taning_list.dart
+    - widgets
+      - presentation
+        - providers
+          - widget_providers.dart
+        - screens
+          - widget_config_screen.dart
   - main.dart
   - plugins
     - notification_plugin.dart
     - share_plugin.dart
+    - widget_bridge.dart
     - widget_plugin.dart
   - shared
     - models
@@ -566,6 +606,19 @@
 - README.md
 - taning.iml
 - test
+  - core
+    - services
+      - notification_scheduler_test.dart
+  - feautures
+    - tanings
+      - domain
+        - engines
+          - countdown_engine_test.dart
+      - presentation
+        - widgets
+          - taning_card_test.dart
+  - integration
+    - taning_flow_test.dart
   - widget_test.dart
 - web
   - favicon.png

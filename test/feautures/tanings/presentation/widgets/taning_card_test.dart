@@ -11,7 +11,7 @@ void main() {
         title: 'Vacation',
         type: TaningType.countdown,
         endDate: DateTime(2026, 8, 24),
-        color: TaningColor(value: 0xFF4F46E5),
+        color: const TaningColor(value: 0xFF4F46E5),
         icon: const TaningIcon(codePoint: 0xE8ED),
       );
 

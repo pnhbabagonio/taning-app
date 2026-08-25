@@ -19,8 +19,8 @@ class TaningList extends ConsumerStatefulWidget {
 }
 
 class _TaningListState extends ConsumerState<TaningList> {
-  String _sortBy = 'soonest';
-  String _filter = 'all';
+  final String _sortBy = 'soonest';
+  final String _filter = 'all';
 
   @override
   Widget build(BuildContext context) {
@@ -194,7 +194,7 @@ class _TaningOptionsSheet extends ConsumerWidget {
             ),
             title: Text(taning.isPinned ? 'Unpin' : 'Pin'),
             onTap: () {
-              ref.read(tandingRepositoryProvider).togglePin(taning.id);
+              ref.read(taningRepositoryProvider).togglePin(taning.id);
               Navigator.pop(context);
             },
           ),
@@ -218,7 +218,7 @@ class _TaningOptionsSheet extends ConsumerWidget {
             leading: const Icon(Icons.archive_outlined),
             title: const Text('Archive'),
             onTap: () {
-              ref.read(tandingRepositoryProvider).archive(taning.id);
+              ref.read(taningRepositoryProvider).archive(taning.id);
               Navigator.pop(context);
             },
           ),
@@ -255,7 +255,7 @@ class _TaningOptionsSheet extends ConsumerWidget {
             onPressed: () {
               Navigator.pop(context);
                 ProviderScope.containerOf(context, listen: false)
-                  .read(tandingRepositoryProvider)
+                  .read(taningRepositoryProvider)
                   .delete(id);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Taning deleted')),

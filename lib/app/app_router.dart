@@ -6,6 +6,7 @@ import 'package:taning/features/tanings/presentation/screens/create_screen.dart'
 import 'package:taning/features/tanings/presentation/screens/detail_screen.dart';
 import 'package:taning/features/tanings/presentation/screens/edit_screen.dart';
 import 'package:taning/features/tanings/presentation/screens/settings_screen.dart';
+import 'package:taning/features/widgets/presentation/screens/widget_config_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(

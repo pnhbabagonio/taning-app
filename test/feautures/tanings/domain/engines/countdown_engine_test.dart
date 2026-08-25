@@ -94,8 +94,7 @@ void main() {
         title: 'Vacation',
         type: TaningType.countdown,
         endDate: DateTime(2026, 8, 24),
-        createdAt: DateTime(2026, 8, 10),
-      );
+      ).copyWith(createdAt: DateTime(2026, 8, 10));
 
       final state = engine.calculate(now: now, taning: taning);
 
@@ -188,8 +187,7 @@ void main() {
       final taning = Taning.create(
         title: 'Daily Event',
         type: TaningType.recurring,
-        recurrence: DailyRecurrence(interval: 1),
-      );
+      ).copyWith(recurrence: const DailyRecurrence(interval: 1));
 
       final state = engine.calculate(now: now, taning: taning);
 
@@ -202,8 +200,7 @@ void main() {
       final taning = Taning.create(
         title: 'Weekly Event',
         type: TaningType.recurring,
-        recurrence: WeeklyRecurrence(weekdays: [3]), // Wednesday
-      );
+      ).copyWith(recurrence: const WeeklyRecurrence(weekdays: [3])); // Wednesday
 
       final state = engine.calculate(now: now, taning: taning);
 

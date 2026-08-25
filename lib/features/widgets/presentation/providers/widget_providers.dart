@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:taning/plugins/widget_bridge.dart';
-import 'package:taning/features/tanings/domain/repositories/taning_repository.dart';
+import 'package:taning/features/tanings/domain/entities/taning.dart';
 import 'package:taning/features/tanings/presentation/providers/taning_providers.dart';
 
 final widgetBridgeProvider = Provider<WidgetBridge>((ref) {
@@ -8,7 +8,7 @@ final widgetBridgeProvider = Provider<WidgetBridge>((ref) {
 });
 
 final widgetUpdateProvider = FutureProvider<void>((ref) async {
-  final repository = ref.watch(tandingRepositoryProvider);
+  final repository = ref.watch(taningRepositoryProvider);
   final tanings = await repository.getAll();
   await WidgetBridge.updateWidgetsWithAllTanings(tanings);
 });

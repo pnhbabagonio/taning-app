@@ -24,7 +24,7 @@ class AppTheme {
       
       textTheme: AppTypography.lightTextTheme,
       
-      cardTheme: const CardTheme(
+      cardTheme: const CardThemeData(
         elevation: 1,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(16)),
@@ -105,7 +105,7 @@ class AppTheme {
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
+          borderSide: const BorderSide(
             color: AppColors.lightDivider,
             width: 1,
           ),
@@ -148,7 +148,7 @@ class AppTheme {
         ),
       ),
       
-      dialogTheme: const DialogTheme(
+      dialogTheme: const DialogThemeData(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(20)),
         ),
@@ -170,15 +170,15 @@ class AppTheme {
         space: 24,
       ),
       
-      chipTheme: ChipThemeData(
+      chipTheme: const ChipThemeData(
         backgroundColor: AppColors.lightSurfaceVariant,
-        labelStyle: const TextStyle(
+        labelStyle: TextStyle(
           fontSize: 13,
           fontWeight: FontWeight.w500,
           color: AppColors.lightOnSurface,
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        shape: const RoundedRectangleBorder(
+        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(20)),
         ),
       ),
@@ -214,7 +214,7 @@ class AppTheme {
       
       textTheme: AppTypography.darkTextTheme,
       
-      cardTheme: const CardTheme(
+      cardTheme: const CardThemeData(
         elevation: 2,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(16)),
@@ -268,7 +268,7 @@ class AppTheme {
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
+          borderSide: const BorderSide(
             color: AppColors.darkDivider,
             width: 1,
           ),
@@ -311,7 +311,7 @@ class AppTheme {
         ),
       ),
       
-      dialogTheme: const DialogTheme(
+      dialogTheme: const DialogThemeData(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(20)),
         ),
@@ -334,15 +334,15 @@ class AppTheme {
         space: 24,
       ),
       
-      chipTheme: ChipThemeData(
+      chipTheme: const ChipThemeData(
         backgroundColor: AppColors.darkSurfaceVariant,
-        labelStyle: const TextStyle(
+        labelStyle: TextStyle(
           fontSize: 13,
           fontWeight: FontWeight.w500,
           color: AppColors.darkOnSurface,
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        shape: const RoundedRectangleBorder(
+        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(20)),
         ),
       ),

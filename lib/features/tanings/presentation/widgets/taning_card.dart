@@ -1,3 +1,5 @@
+// ignore_for_file: non_const_argument_for_const_parameter
+
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,7 +28,7 @@ class TaningCard extends ConsumerStatefulWidget {
 
 class _TaningCardState extends ConsumerState<TaningCard> {
   late final Ticker _ticker;
-  CountdownState _currentState = CountdownState(
+  CountdownState _currentState = const CountdownState(
     status: CountdownStatus.active,
     formattedRemaining: '',
     isOverdue: false,
@@ -145,7 +147,6 @@ class _StandardCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isFinished = state.isFinished || state.isOverdue;
 
-
     return Container(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -157,7 +158,7 @@ class _StandardCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(icon, color: color, size: 20),
@@ -178,9 +179,12 @@ class _StandardCard extends StatelessWidget {
                 const Icon(Icons.push_pin, size: 16, color: Colors.grey),
               if (isFinished)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: state.isOverdue ? Colors.red.shade100 : Colors.green.shade100,
+                    color: state.isOverdue
+                        ? Colors.red.shade100
+                        : Colors.green.shade100,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -188,7 +192,9 @@ class _StandardCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
-                      color: state.isOverdue ? Colors.red.shade800 : Colors.green.shade800,
+                      color: state.isOverdue
+                          ? Colors.red.shade800
+                          : Colors.green.shade800,
                     ),
                   ),
                 ),
@@ -204,7 +210,8 @@ class _StandardCard extends StatelessWidget {
               Expanded(
                 child: _buildCountdownDisplay(),
               ),
-              if (state.progressPercentage != null && state.progressPercentage! > 0)
+              if (state.progressPercentage != null &&
+                  state.progressPercentage! > 0)
                 _buildProgressIndicator(),
             ],
           ),
@@ -225,7 +232,8 @@ class _StandardCard extends StatelessWidget {
                   ),
                 ),
                 const Spacer(),
-                if (taning.type == TaningType.duration && state.currentDay != null)
+                if (taning.type == TaningType.duration &&
+                    state.currentDay != null)
                   Text(
                     'Day ${state.currentDay} of ${state.totalDays}',
                     style: TextStyle(
@@ -261,12 +269,12 @@ class _StandardCard extends StatelessWidget {
       );
     }
 
-    if (state.status == CountdownStatus.completed || 
+    if (state.status == CountdownStatus.completed ||
         state.status == CountdownStatus.ended) {
-      return Column(
+      return const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             '✅ Completed',
             style: TextStyle(
               fontSize: 24,
@@ -274,7 +282,7 @@ class _StandardCard extends StatelessWidget {
               color: Colors.green,
             ),
           ),
-          const Text(
+          Text(
             'Your taning has arrived!',
             style: TextStyle(fontSize: 14, color: Colors.grey),
           ),
@@ -367,7 +375,7 @@ class _CompactCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(6),
             ),
             child: Icon(icon, color: color, size: 16),
@@ -453,7 +461,7 @@ class _FocusCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: color, size: 32),
@@ -529,10 +537,10 @@ class _MiniCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.05),
+        color: color.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: color.withOpacity(0.2),
+          color: color.withValues(alpha: 0.2),
           width: 1,
         ),
       ),

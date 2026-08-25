@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:taning/plugins/widget_bridge.dart';
 import 'package:taning/features/tanings/domain/entities/taning.dart';
 import 'package:taning/features/widgets/presentation/providers/widget_providers.dart';
 import 'package:taning/features/tanings/presentation/providers/taning_providers.dart';
@@ -308,7 +309,6 @@ class _WidgetConfigContentState extends State<_WidgetConfigContent> {
       orElse: () => widget.tanings.first,
     );
     
-    final color = taning.color.toColor();
     final icon = String.fromCharCode(taning.icon.codePoint);
 
     return Container(
@@ -336,9 +336,9 @@ class _WidgetConfigContentState extends State<_WidgetConfigContent> {
             ],
           ),
           const Spacer(),
-          Text(
+          const Text(
             '14d 6h',
-            style: const TextStyle(
+            style: TextStyle(
               color: Colors.white,
               fontSize: 28,
               fontWeight: FontWeight.bold,
@@ -349,7 +349,7 @@ class _WidgetConfigContentState extends State<_WidgetConfigContent> {
             Container(
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(2),
               ),
               child: FractionallySizedBox(

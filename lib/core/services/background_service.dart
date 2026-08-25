@@ -1,6 +1,5 @@
 import 'package:workmanager/workmanager.dart';
 import 'package:taning/core/services/logger.dart';
-import 'package:taning/core/services/notification_scheduler.dart';
 
 class BackgroundService {
   static const String taskName = 'taning_sync_notifications';
@@ -10,7 +9,6 @@ class BackgroundService {
     try {
       await Workmanager().initialize(
         callbackDispatcher,
-        isInDebugMode: false,
       );
       LoggerService.info('Background service initialized');
     } catch (e) {
@@ -24,7 +22,7 @@ class BackgroundService {
         uniqueName,
         taskName,
         // Run every 6 hours minimum
-        frequency: Duration(hours: 6),
+        frequency: const Duration(hours: 6),
         constraints: Constraints(
           networkType: NetworkType.connected,
           requiresBatteryNotLow: true,

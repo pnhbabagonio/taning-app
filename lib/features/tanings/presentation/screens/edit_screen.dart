@@ -174,7 +174,7 @@ class _EditScreenState extends ConsumerState<EditScreen> {
         lastNotifiedAt: widget.taning.lastNotifiedAt,
       );
 
-      await ref.read(tandingRepositoryProvider).save(updatedTaning);
+      await ref.read(taningRepositoryProvider).save(updatedTaning);
 
       if (mounted) {
         Navigator.pop(context, true);
