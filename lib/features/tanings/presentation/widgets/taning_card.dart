@@ -7,6 +7,7 @@ import 'package:taning/core/utils/countdown_formatter.dart';
 import 'package:taning/features/tanings/domain/entities/countdown_state.dart';
 import 'package:taning/features/tanings/domain/entities/taning.dart';
 import 'package:taning/features/tanings/presentation/providers/taning_providers.dart';
+import 'package:taning/shared/widgets/countdown_display.dart';
 
 class TaningCard extends ConsumerStatefulWidget {
   final Taning taning;
@@ -33,6 +34,7 @@ class _TaningCardState extends ConsumerState<TaningCard> {
     formattedRemaining: '',
     isOverdue: false,
   );
+  DateTime _lastUpdate = DateTime.now();
 
   @override
   void initState() {
@@ -49,7 +51,26 @@ class _TaningCardState extends ConsumerState<TaningCard> {
   }
 
   void _onTick(Duration elapsed) {
-    _updateState();
+    final now = DateTime.now();
+    if (now.difference(_lastUpdate) >= _getUpdateInterval()) {
+      _updateState();
+      _lastUpdate = now;
+    }
+  }
+
+  Duration _getUpdateInterval() {
+    final style = widget.taning.countdownStyle;
+    switch (style) {
+      case CountdownStyle.simple:
+      case CountdownStyle.calendar:
+        return const Duration(minutes: 1);
+      case CountdownStyle.detailed:
+        return const Duration(seconds: 10);
+      case CountdownStyle.full:
+        return const Duration(seconds: 1);
+      default:
+        return const Duration(seconds: 1);
+    }
   }
 
   void _updateState() {
@@ -152,7 +173,7 @@ class _StandardCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header: Icon + Title + Status
+          // Header
           Row(
             children: [
               Container(
@@ -249,91 +270,14 @@ class _StandardCard extends StatelessWidget {
   }
 
   Widget _buildCountdownDisplay() {
-    if (state.status == CountdownStatus.overdue) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            '${state.remainingDuration?.inDays.abs() ?? 0} days overdue',
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w700,
-              color: Colors.red,
-            ),
-          ),
-          const Text(
-            'Time has passed',
-            style: TextStyle(fontSize: 14, color: Colors.grey),
-          ),
-        ],
-      );
-    }
-
-    if (state.status == CountdownStatus.completed ||
-        state.status == CountdownStatus.ended) {
-      return const Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            '✅ Completed',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w700,
-              color: Colors.green,
-            ),
-          ),
-          Text(
-            'Your taning has arrived!',
-            style: TextStyle(fontSize: 14, color: Colors.grey),
-          ),
-        ],
-      );
-    }
-
-    final displayText = state.formattedRemaining;
-    final unit = _getTimeUnit(displayText);
-    final number = displayText.replaceAll(RegExp(r'[^0-9]'), '');
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          number.isNotEmpty ? number : displayText,
-          style: const TextStyle(
-            fontSize: 32,
-            fontWeight: FontWeight.w700,
-            height: 1.0,
-          ),
-        ),
-        Text(
-          unit.isNotEmpty ? unit : _getFallbackUnit(state),
-          style: const TextStyle(
-            fontSize: 14,
-            color: Colors.grey,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
+    final duration = state.remainingDuration ?? Duration.zero;
+    return CountdownDisplay(
+      duration: duration,
+      style: taning.countdownStyle,
+      color: color,
+      isOverdue: state.isOverdue,
+      isFinished: state.isFinished || state.status == CountdownStatus.ended,
     );
-  }
-
-  String _getTimeUnit(String displayText) {
-    if (displayText.contains('d')) return 'days';
-    if (displayText.contains('h')) return 'hours';
-    if (displayText.contains('m')) return 'minutes';
-    if (displayText.contains('s')) return 'seconds';
-    return '';
-  }
-
-  String _getFallbackUnit(CountdownState state) {
-    if (state.remainingDuration != null) {
-      final d = state.remainingDuration!;
-      if (d.inDays > 0) return 'days';
-      if (d.inHours > 0) return 'hours';
-      if (d.inMinutes > 0) return 'minutes';
-      return 'seconds';
-    }
-    return '';
   }
 
   Widget _buildProgressIndicator() {
@@ -401,7 +345,7 @@ class _CompactCard extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               ),
             )
-          else if (state.isFinished)
+          else if (state.isFinished || state.status == CountdownStatus.ended)
             const Text(
               'Done',
               style: TextStyle(
@@ -411,12 +355,10 @@ class _CompactCard extends StatelessWidget {
               ),
             )
           else
-            Text(
-              state.formattedRemaining,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
+            CountdownDisplay(
+              duration: state.remainingDuration ?? Duration.zero,
+              style: CountdownStyle.simple,
+              color: color,
             ),
           const SizedBox(width: 8),
           if (state.progressPercentage != null)
@@ -476,13 +418,12 @@ class _FocusCard extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 24),
-          Text(
-            state.formattedRemaining,
-            style: const TextStyle(
-              fontSize: 48,
-              fontWeight: FontWeight.w700,
-            ),
-            textAlign: TextAlign.center,
+          CountdownDisplay(
+            duration: state.remainingDuration ?? Duration.zero,
+            style: CountdownStyle.full,
+            color: color,
+            isOverdue: state.isOverdue,
+            isFinished: state.isFinished || state.status == CountdownStatus.ended,
           ),
           if (state.targetDate != null) ...[
             const SizedBox(height: 8),
@@ -558,15 +499,13 @@ class _MiniCard extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-          if (!state.isFinished)
-            Text(
-              state.formattedRemaining,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
+          if (!state.isFinished && state.status != CountdownStatus.ended)
+            CountdownDisplay(
+              duration: state.remainingDuration ?? Duration.zero,
+              style: CountdownStyle.simple,
+              color: color,
             ),
-          if (state.isFinished)
+          if (state.isFinished || state.status == CountdownStatus.ended)
             Text(
               state.isOverdue ? 'Overdue' : 'Done',
               style: const TextStyle(
