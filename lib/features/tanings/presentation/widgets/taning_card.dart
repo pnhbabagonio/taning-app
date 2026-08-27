@@ -396,63 +396,71 @@ class _FocusCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(32),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: color, size: 32),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            taning.title,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 24),
-          CountdownDisplay(
-            duration: state.remainingDuration ?? Duration.zero,
-            style: CountdownStyle.full,
-            color: color,
-            isOverdue: state.isOverdue,
-            isFinished: state.isFinished || state.status == CountdownStatus.ended,
-          ),
-          if (state.targetDate != null) ...[
-            const SizedBox(height: 8),
-            Text(
-              CountdownFormatter.formatDate(state.targetDate!),
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.grey,
+      padding: const EdgeInsets.all(20),
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        alignment: Alignment.center,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
               ),
+              child: Icon(icon, color: color, size: 32),
             ),
-          ],
-          if (state.progressPercentage != null) ...[
             const SizedBox(height: 16),
-            LinearProgressIndicator(
-              value: state.progressPercentage,
-              backgroundColor: Colors.grey.shade200,
-              valueColor: AlwaysStoppedAnimation<Color>(color),
-              minHeight: 4,
-            ),
-            const SizedBox(height: 8),
             Text(
-              '${(state.progressPercentage! * 100).toStringAsFixed(0)}%',
+              taning.title,
               style: const TextStyle(
-                fontSize: 12,
-                color: Colors.grey,
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
               ),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
+            const SizedBox(height: 24),
+            CountdownDisplay(
+              duration: state.remainingDuration ?? Duration.zero,
+              style: CountdownStyle.full,
+              color: color,
+              isOverdue: state.isOverdue,
+              isFinished:
+                  state.isFinished || state.status == CountdownStatus.ended,
+            ),
+            if (state.targetDate != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                CountdownFormatter.formatDate(state.targetDate!),
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
+              ),
+            ],
+            if (state.progressPercentage != null) ...[
+              const SizedBox(height: 16),
+              LinearProgressIndicator(
+                value: state.progressPercentage,
+                backgroundColor: Colors.grey.shade200,
+                valueColor: AlwaysStoppedAnimation<Color>(color),
+                minHeight: 4,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                '${(state.progressPercentage! * 100).toStringAsFixed(0)}%',
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey,
+                ),
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }

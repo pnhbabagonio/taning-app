@@ -75,21 +75,37 @@ class _TaningListState extends ConsumerState<TaningList> {
     );
   }
 
+  /// Focus view with square card, proper sizing, and adjusted position
   Widget _buildFocusView(List<Taning> tanings) {
-    // Show the first Taning in focus mode
     final taning = tanings.first;
+    final screenSize = MediaQuery.of(context).size;
+    final maxSize = screenSize.width < screenSize.height
+        ? screenSize.width * 0.85
+        : screenSize.height * 0.75;
+
+    // Make it slightly larger to accommodate content
+    final cardSize = maxSize.clamp(300.0, 500.0);
+
     return Center(
-      child: TaningCard(
-        taning: taning,
-        variant: TaningCardVariant.focus,
-        onTap: () => _navigateToDetail(taning.id),
+      child: Padding(
+        padding: const EdgeInsets.only(
+            top: 40.0, left: 24.0, right: 24.0, bottom: 24.0),
+        child: SizedBox(
+          width: cardSize,
+          height: cardSize,
+          child: TaningCard(
+            taning: taning,
+            variant: TaningCardVariant.focus,
+            onTap: () => _navigateToDetail(taning.id),
+          ),
+        ),
       ),
     );
   }
 
   List<Taning> _getSortedTanings() {
     final list = List<Taning>.from(widget.tanings);
-    
+
     switch (_sortBy) {
       case 'soonest':
         list.sort((a, b) {
@@ -112,14 +128,14 @@ class _TaningListState extends ConsumerState<TaningList> {
         list.sort((a, b) => a.title.compareTo(b.title));
         break;
     }
-    
+
     // Pinned items first
     list.sort((a, b) {
       if (a.isPinned && !b.isPinned) return -1;
       if (!a.isPinned && b.isPinned) return 1;
       return 0;
     });
-    
+
     return list;
   }
 
@@ -130,15 +146,19 @@ class _TaningListState extends ConsumerState<TaningList> {
       case 'completed':
         return tanings.where((t) => t.isCompleted).toList();
       case 'upcoming':
-        return tanings.where((t) => 
-          !t.isCompleted && !t.isArchived && 
-          (t.endDate?.isAfter(DateTime.now()) ?? false)
-        ).toList();
+        return tanings
+            .where((t) =>
+                !t.isCompleted &&
+                !t.isArchived &&
+                (t.endDate?.isAfter(DateTime.now()) ?? false))
+            .toList();
       case 'overdue':
-        return tanings.where((t) => 
-          !t.isCompleted && !t.isArchived &&
-          (t.endDate?.isBefore(DateTime.now()) ?? false)
-        ).toList();
+        return tanings
+            .where((t) =>
+                !t.isCompleted &&
+                !t.isArchived &&
+                (t.endDate?.isBefore(DateTime.now()) ?? false))
+            .toList();
       default:
         return tanings;
     }
@@ -254,7 +274,7 @@ class _TaningOptionsSheet extends ConsumerWidget {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-                ProviderScope.containerOf(context, listen: false)
+              ProviderScope.containerOf(context, listen: false)
                   .read(taningRepositoryProvider)
                   .delete(id);
               ScaffoldMessenger.of(context).showSnackBar(
