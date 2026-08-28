@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:taning/core/services/share_service.dart';
 import 'package:taning/features/tanings/domain/entities/taning.dart';
-import 'package:taning/features/tanings/presentation/widgets/taning_card.dart';
 import 'package:taning/features/tanings/presentation/providers/taning_providers.dart';
+import 'package:taning/features/tanings/presentation/widgets/taning_card.dart';
 
 class TaningList extends ConsumerStatefulWidget {
   final List<Taning> tanings;
@@ -19,8 +21,8 @@ class TaningList extends ConsumerStatefulWidget {
 }
 
 class _TaningListState extends ConsumerState<TaningList> {
-  final String _sortBy = 'soonest';
-  final String _filter = 'all';
+  String _sortBy = 'soonest';
+  String _filter = 'all';
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +30,9 @@ class _TaningListState extends ConsumerState<TaningList> {
     final filteredTanings = _getFilteredTanings(sortedTanings);
 
     if (filteredTanings.isEmpty) {
-      return const _EmptyFilterState();
+      return _EmptyFilterState(
+        onResetFilters: _resetFilters,
+      );
     }
 
     switch (widget.variant) {
@@ -87,17 +91,13 @@ class _TaningListState extends ConsumerState<TaningList> {
     final cardSize = maxSize.clamp(300.0, 500.0);
 
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.only(
-            top: 40.0, left: 24.0, right: 24.0, bottom: 24.0),
-        child: SizedBox(
-          width: cardSize,
-          height: cardSize,
-          child: TaningCard(
-            taning: taning,
-            variant: TaningCardVariant.focus,
-            onTap: () => _navigateToDetail(taning.id),
-          ),
+      child: SizedBox(
+        width: cardSize,
+        height: cardSize,
+        child: TaningCard(
+          taning: taning,
+          variant: TaningCardVariant.focus,
+          onTap: () => _navigateToDetail(taning.id),
         ),
       ),
     );
@@ -165,7 +165,7 @@ class _TaningListState extends ConsumerState<TaningList> {
   }
 
   void _navigateToDetail(String id) {
-    // TODO: Navigate to detail screen
+    context.push('/detail/$id');
   }
 
   void _showCardOptions(Taning taning) {
@@ -176,6 +176,13 @@ class _TaningListState extends ConsumerState<TaningList> {
       ),
       builder: (context) => _TaningOptionsSheet(taning: taning),
     );
+  }
+
+  void _resetFilters() {
+    setState(() {
+      _sortBy = 'soonest';
+      _filter = 'all';
+    });
   }
 }
 
@@ -223,7 +230,7 @@ class _TaningOptionsSheet extends ConsumerWidget {
             title: const Text('Edit'),
             onTap: () {
               Navigator.pop(context);
-              // TODO: Navigate to edit
+              context.push('/edit', extra: {'taning': taning});
             },
           ),
           ListTile(
@@ -231,7 +238,7 @@ class _TaningOptionsSheet extends ConsumerWidget {
             title: const Text('Share'),
             onTap: () {
               Navigator.pop(context);
-              // TODO: Share
+              ShareService.shareTaning(context, taning);
             },
           ),
           ListTile(
@@ -292,7 +299,9 @@ class _TaningOptionsSheet extends ConsumerWidget {
 // MARK: - Empty Filter State
 
 class _EmptyFilterState extends StatelessWidget {
-  const _EmptyFilterState();
+  final VoidCallback onResetFilters;
+
+  const _EmptyFilterState({required this.onResetFilters});
 
   @override
   Widget build(BuildContext context) {
@@ -315,9 +324,7 @@ class _EmptyFilterState extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           TextButton(
-            onPressed: () {
-              // TODO: Reset filters
-            },
+            onPressed: onResetFilters,
             child: const Text('Clear filters'),
           ),
         ],
