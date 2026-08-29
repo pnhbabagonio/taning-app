@@ -17,21 +17,17 @@ Know your taning.
 Taning - Make time visible.
 ''';
 
-      // Correct usage for share_plus
-      await SharePlus.instance.share(
-        ShareParams(
-          text: shareText,
-          subject: 'My Taning: ${taning.title}',
-        ),
+      // Correct API for share_plus ^10.0.0+
+      await Share.share(
+        shareText,
+        subject: 'My Taning: ${taning.title}',
       );
     } catch (e) {
       // Fallback to simple share
       try {
-        await SharePlus.instance.share(
-          ShareParams(
-            text: 'Check out my Taning: ${taning.title}!',
-            subject: 'My Taning',
-          ),
+        await Share.share(
+          'Check out my Taning: ${taning.title}!',
+          subject: 'My Taning',
         );
       } catch (_) {
         // Silent fail

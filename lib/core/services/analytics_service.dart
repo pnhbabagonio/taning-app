@@ -32,17 +32,17 @@ class AnalyticsService {
     }
   }
 
-  void logEvent(String name, {Map<String, dynamic>? parameters}) {
-    if (!_isEnabled) return;
-    try {
-      _analytics?.logEvent(
-        name: name,
-        parameters: parameters,
-      );
-    } catch (e) {
-      LoggerService.debug('Failed to log event: $e');
-    }
+ void logEvent(String name, {Map<String, Object>? parameters}) {
+  if (!_isEnabled) return;
+  try {
+    _analytics?.logEvent(
+      name: name,
+      parameters: parameters,
+    );
+  } catch (e) {
+    LoggerService.debug('Failed to log event: $e');
   }
+}
 
   // Product-specific events
   void logTaningCreated({required String type, required String? category}) {

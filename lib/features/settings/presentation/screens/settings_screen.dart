@@ -134,7 +134,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   }
                 },
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-                activeColor: accentColor,
+                activeThumbColor: accentColor,
               ),
             ],
           ),
