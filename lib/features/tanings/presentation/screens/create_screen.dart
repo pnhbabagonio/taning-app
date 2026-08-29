@@ -26,46 +26,48 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(),
-      body: Column(
-        children: [
-          _buildProgressIndicator(),
-          Expanded(
-            child: PageView(
-              controller: _pageController,
-              onPageChanged: (index) {
-                setState(() {
-                  _currentStep = index;
-                });
-              },
-              children: [
-                TitleStep(
-                  viewModel: _createViewModel,
-                  onNext: () => _goToStep(1),
-                ),
-                DateTimeStep(
-                  viewModel: _createViewModel,
-                  onNext: () => _goToStep(2),
-                  onBack: () => _goToStep(0),
-                ),
-                TypeStep(
-                  viewModel: _createViewModel,
-                  onNext: () => _goToStep(3),
-                  onBack: () => _goToStep(1),
-                ),
-                CustomizeStep(
-                  viewModel: _createViewModel,
-                  onNext: () => _goToStep(4),
-                  onBack: () => _goToStep(2),
-                ),
-                PreviewStep(
-                  viewModel: _createViewModel,
-                  onBack: () => _goToStep(3),
-                  onCreate: _createTaning,
-                ),
-              ],
+      body: SafeArea(
+        child: Column(
+          children: [
+            _buildProgressIndicator(),
+            Expanded(
+              child: PageView(
+                controller: _pageController,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentStep = index;
+                  });
+                },
+                children: [
+                  TitleStep(
+                    viewModel: _createViewModel,
+                    onNext: () => _goToStep(1),
+                  ),
+                  DateTimeStep(
+                    viewModel: _createViewModel,
+                    onNext: () => _goToStep(2),
+                    onBack: () => _goToStep(0),
+                  ),
+                  TypeStep(
+                    viewModel: _createViewModel,
+                    onNext: () => _goToStep(3),
+                    onBack: () => _goToStep(1),
+                  ),
+                  CustomizeStep(
+                    viewModel: _createViewModel,
+                    onNext: () => _goToStep(4),
+                    onBack: () => _goToStep(2),
+                  ),
+                  PreviewStep(
+                    viewModel: _createViewModel,
+                    onBack: () => _goToStep(3),
+                    onCreate: _createTaning,
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

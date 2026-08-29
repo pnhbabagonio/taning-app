@@ -41,16 +41,31 @@ class PreviewStep extends StatelessWidget {
               color: Colors.grey,
             ),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 16),
+          // Use LayoutBuilder to get available space
           Expanded(
-            child: Center(
-              child: TaningCard(
-                taning: taning,
-                variant: TaningCardVariant.focus,
-              ),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final maxHeight = constraints.maxHeight;
+                final maxWidth = constraints.maxWidth;
+                final size =
+                    maxWidth < maxHeight ? maxWidth * 0.85 : maxHeight * 0.85;
+                final cardSize = size.clamp(200.0, 400.0);
+
+                return Center(
+                  child: SizedBox(
+                    width: cardSize,
+                    height: cardSize,
+                    child: TaningCard(
+                      taning: taning,
+                      variant: TaningCardVariant.focus,
+                    ),
+                  ),
+                );
+              },
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
           // Summary
           Card(
             child: Padding(
@@ -78,23 +93,28 @@ class PreviewStep extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 24),
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: onBack,
-                  child: const Text('Back'),
+          const SizedBox(height: 16),
+          Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).padding.bottom + 8,
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: onBack,
+                    child: const Text('Back'),
+                  ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: onCreate,
-                  child: const Text('Create Taning'),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: onCreate,
+                    child: const Text('Create Taning'),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
@@ -144,7 +164,8 @@ class PreviewStep extends StatelessWidget {
       return 'Since ${_formatDate(taning.startDate!)}';
     }
     if (taning.type == TaningType.duration) {
-      final start = taning.startDate != null ? _formatDate(taning.startDate!) : '';
+      final start =
+          taning.startDate != null ? _formatDate(taning.startDate!) : '';
       final end = taning.endDate != null ? _formatDate(taning.endDate!) : '';
       return '$start → $end';
     }

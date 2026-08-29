@@ -218,7 +218,7 @@ class _TaningOptionsSheet extends ConsumerWidget {
           ListTile(
             leading: Icon(
               taning.isPinned ? Icons.push_pin : Icons.push_pin_outlined,
-            ),
+            ),  
             title: Text(taning.isPinned ? 'Unpin' : 'Pin'),
             onTap: () {
               ref.read(taningRepositoryProvider).togglePin(taning.id);

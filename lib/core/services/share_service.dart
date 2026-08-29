@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:taning/features/tanings/domain/entities/taning.dart';
 import 'package:intl/intl.dart';
+import 'package:taning/features/tanings/domain/entities/taning.dart';
 
 class ShareService {
   static Future<void> shareTaning(BuildContext context, Taning taning) async {
@@ -17,16 +17,21 @@ Know your taning.
 Taning - Make time visible.
 ''';
 
-      await Share.share(
-        shareText,
-        subject: 'My Taning: ${taning.title}',
+      // Correct usage for share_plus
+      await SharePlus.instance.share(
+        ShareParams(
+          text: shareText,
+          subject: 'My Taning: ${taning.title}',
+        ),
       );
     } catch (e) {
       // Fallback to simple share
       try {
-        await Share.share(
-          'Check out my Taning: ${taning.title}!',
-          subject: 'My Taning',
+        await SharePlus.instance.share(
+          ShareParams(
+            text: 'Check out my Taning: ${taning.title}!',
+            subject: 'My Taning',
+          ),
         );
       } catch (_) {
         // Silent fail

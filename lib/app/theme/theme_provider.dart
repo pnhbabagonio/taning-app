@@ -1,4 +1,3 @@
-// lib/app/theme/theme_provider.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -10,17 +9,19 @@ enum ThemeModePreference {
 }
 
 final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>((ref) {
-  return ThemeModeNotifier();
+  return ThemeModeNotifier(ref);
 });
 
 class ThemeModeNotifier extends StateNotifier<ThemeMode> {
-  ThemeModeNotifier() : super(ThemeMode.system) {
+  final Ref ref;
+
+  ThemeModeNotifier(this.ref) : super(ThemeMode.system) {
     _loadThemePreference();
   }
-  
+
   Future<void> _loadThemePreference() async {
     final prefs = await SharedPreferences.getInstance();
-    final saved = prefs.getString('theme_mode');
+    final saved = prefs.getString('settings_theme_mode');
     if (saved != null) {
       final mode = ThemeModePreference.values.firstWhere(
         (e) => e.toString() == saved,
@@ -29,13 +30,14 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
       state = _convertToThemeMode(mode);
     }
   }
-  
+
   void setThemeMode(ThemeModePreference mode) async {
     state = _convertToThemeMode(mode);
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('theme_mode', mode.toString());
+    await prefs.setString('settings_theme_mode', mode.toString());
+    // Settings provider will also save this, but we already did
   }
-  
+
   ThemeMode _convertToThemeMode(ThemeModePreference mode) {
     switch (mode) {
       case ThemeModePreference.system:
@@ -47,6 +49,3 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
     }
   }
 }
-
-// High contrast mode
-final highContrastProvider = StateProvider<bool>((ref) => false);

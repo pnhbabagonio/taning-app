@@ -37,7 +37,7 @@ class CountdownDisplay extends StatelessWidget {
         children: [
           Text(
             '${duration.inDays.abs()} days overdue',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.w700,
               color: Colors.red,
@@ -173,7 +173,7 @@ class CountdownDisplay extends StatelessWidget {
       parts.add(_DisplayPart(seconds, 'seconds'));
     }
     if (parts.isEmpty) {
-      parts.add(_DisplayPart(0, 'seconds'));
+      parts.add(const _DisplayPart(0, 'seconds'));
     }
     return parts;
   }
