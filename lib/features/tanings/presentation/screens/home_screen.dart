@@ -1,11 +1,11 @@
-//lib\features\tanings\presentation\screens\home_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:taning/features/settings/presentation/providers/settings_providers.dart';
 import 'package:taning/features/tanings/presentation/providers/taning_providers.dart';
 import 'package:taning/features/tanings/presentation/widgets/taning_list.dart';
-import 'package:taning/shared/widgets/empty_state.dart';
 import 'package:taning/features/widgets/presentation/screens/widget_config_screen.dart';
+import 'package:taning/shared/widgets/empty_state.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -17,7 +17,21 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   String _sortBy = 'soonest';
   String _filter = 'all';
-  TaningListVariant _viewMode = TaningListVariant.list;
+  late TaningListVariant _viewMode;
+
+  @override
+  void initState() {
+    super.initState();
+    _viewMode = TaningListVariant.list;
+    // Load settings after first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final settings = ref.read(settingsProvider);
+      setState(() {
+        _sortBy = settings.defaultSort;
+        _viewMode = settings.defaultView;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,17 +121,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           tooltip: 'Settings',
         ),
         IconButton(
-  icon: const Icon(Icons.widgets_outlined),
-  onPressed: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const WidgetConfigScreen(),
-      ),
-    );
-  },
-  tooltip: 'Widget Settings',
-),
+          icon: const Icon(Icons.widgets_outlined),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const WidgetConfigScreen(),
+              ),
+            );
+          },
+          tooltip: 'Widget Settings',
+        ),
       ],
     );
   }
@@ -136,6 +150,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           break;
       }
     });
+    // Save preference
+    ref.read(settingsProvider.notifier).setDefaultView(_viewMode);
   }
 
   void _showSortFilterOptions() {
@@ -150,6 +166,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         currentFilter: _filter,
         onSortChanged: (sort) {
           setState(() => _sortBy = sort);
+          // Save preference
+          ref.read(settingsProvider.notifier).setDefaultSort(sort);
         },
         onFilterChanged: (filter) {
           setState(() => _filter = filter);
