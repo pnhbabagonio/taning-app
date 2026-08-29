@@ -33,6 +33,10 @@ class _CustomizeStepState extends ConsumerState<CustomizeStep> {
 
   @override
   Widget build(BuildContext context) {
+    final accentColor = ref.watch(accentColorProvider);
+    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
+
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -58,6 +62,7 @@ class _CustomizeStepState extends ConsumerState<CustomizeStep> {
           Expanded(
             child: SingleChildScrollView(
               controller: _scrollController,
+              padding: EdgeInsets.only(bottom: 16 + keyboardHeight),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -150,13 +155,14 @@ class _CustomizeStepState extends ConsumerState<CustomizeStep> {
                       });
                     },
                   ),
+                  const SizedBox(height: 16),
                 ],
               ),
             ),
           ),
           Padding(
             padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).padding.bottom + 8,
+              bottom: bottomPadding + 8,
             ),
             child: Row(
               children: [
@@ -164,10 +170,8 @@ class _CustomizeStepState extends ConsumerState<CustomizeStep> {
                   child: OutlinedButton(
                     onPressed: widget.onBack,
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: ref.watch(accentColorProvider),
-                      side: BorderSide(
-                        color: ref.watch(accentColorProvider),
-                      ),
+                      foregroundColor: accentColor,
+                      side: BorderSide(color: accentColor),
                     ),
                     child: const Text('Back'),
                   ),
@@ -177,8 +181,8 @@ class _CustomizeStepState extends ConsumerState<CustomizeStep> {
                   child: ElevatedButton(
                     onPressed: widget.onNext,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: ref.watch(accentColorProvider),
-                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                      backgroundColor: accentColor,
+                      foregroundColor: Colors.white,
                       disabledBackgroundColor: Colors.grey.shade300,
                     ),
                     child: const Text('Preview'),
@@ -213,25 +217,19 @@ class _IconSelector extends ConsumerWidget {
       const TaningIcon(codePoint: 0xE8ED, family: 'MaterialIcons'), // flight
       const TaningIcon(codePoint: 0xE8F0, family: 'MaterialIcons'), // cake
       const TaningIcon(codePoint: 0xE8F5, family: 'MaterialIcons'), // school
-      const TaningIcon(
-          codePoint: 0xE8F8, family: 'MaterialIcons'), // assignment
-      const TaningIcon(
-          codePoint: 0xE8FB, family: 'MaterialIcons'), // fitness_center
+      const TaningIcon(codePoint: 0xE8F8, family: 'MaterialIcons'), // assignment
+      const TaningIcon(codePoint: 0xE8FB, family: 'MaterialIcons'), // fitness_center
       const TaningIcon(codePoint: 0xE8FE, family: 'MaterialIcons'), // favorite
-      const TaningIcon(
-          codePoint: 0xE8E9, family: 'MaterialIcons'), // event_note
+      const TaningIcon(codePoint: 0xE8E9, family: 'MaterialIcons'), // event_note
       const TaningIcon(codePoint: 0xE8FD, family: 'MaterialIcons'), // star
       const TaningIcon(codePoint: 0xE8EF, family: 'MaterialIcons'), // favorite
-      const TaningIcon(
-          codePoint: 0xE8F1, family: 'MaterialIcons'), // celebration
+      const TaningIcon(codePoint: 0xE8F1, family: 'MaterialIcons'), // celebration
       const TaningIcon(codePoint: 0xE8F2, family: 'MaterialIcons'), // event
-      const TaningIcon(
-          codePoint: 0xE8F3, family: 'MaterialIcons'), // calendar_month
+      const TaningIcon(codePoint: 0xE8F3, family: 'MaterialIcons'), // calendar_month
       const TaningIcon(codePoint: 0xE8F4, family: 'MaterialIcons'), // schedule
       const TaningIcon(codePoint: 0xE8F6, family: 'MaterialIcons'), // school
       const TaningIcon(codePoint: 0xE8F7, family: 'MaterialIcons'), // work
-      const TaningIcon(
-          codePoint: 0xE8F9, family: 'MaterialIcons'), // emoji_events
+      const TaningIcon(codePoint: 0xE8F9, family: 'MaterialIcons'), // emoji_events
     ];
 
     return Wrap(
@@ -253,14 +251,18 @@ class _IconSelector extends ConsumerWidget {
               border: Border.all(
                 color: isSelected
                     ? accentColor
-                    : Colors.transparent,
-                width: 2,
+                    : isDark
+                        ? Colors.grey.shade700
+                        : Colors.grey.shade300,
+                width: isSelected ? 2 : 1,
               ),
             ),
             child: Icon(
               IconData(icon.codePoint,
                   fontFamily: icon.family ?? 'MaterialIcons'),
-              color: isSelected ? accentColor : (isDark ? Colors.grey.shade400 : Colors.grey.shade700),
+              color: isSelected 
+                  ? accentColor 
+                  : (isDark ? Colors.grey.shade400 : Colors.grey.shade700),
               size: 24,
             ),
           ),
@@ -283,8 +285,6 @@ class _ColorSelector extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final accentColor = ref.watch(accentColorProvider);
-    
     const presets = [
       TaningColor(value: 0xFF4F46E5, name: 'Indigo'),
       TaningColor(value: 0xFF7C3AED, name: 'Purple'),
@@ -302,24 +302,25 @@ class _ColorSelector extends ConsumerWidget {
       runSpacing: 12,
       children: presets.map((color) {
         final isSelected = color.value == selectedColor.value;
+        final colorValue = Color(color.value);
         return GestureDetector(
           onTap: () => onColorSelected(color),
           child: Container(
             width: 50,
             height: 50,
             decoration: BoxDecoration(
-              color: Color(color.value),
+              color: colorValue,
               shape: BoxShape.circle,
               border: Border.all(
                 color: isSelected
-                    ? Colors.white.withValues(alpha: 0.8)
-                    : Colors.transparent,
-                width: 3,
+                    ? colorValue.withValues(alpha: 0.8)
+                    : Colors.grey.shade400,
+                width: isSelected ? 3 : 1,
               ),
               boxShadow: isSelected
                   ? [
                       BoxShadow(
-                        color: Color(color.value).withValues(alpha: 0.4),
+                        color: colorValue.withValues(alpha: 0.4),
                         blurRadius: 8,
                         spreadRadius: 2,
                       ),
@@ -327,10 +328,10 @@ class _ColorSelector extends ConsumerWidget {
                   : [],
             ),
             child: isSelected
-                ? Icon(Icons.check, 
-                    color: _getContrastColor(Color(color.value)), 
+                ? Icon(
+                    Icons.check, 
+                    color: _getContrastColor(colorValue), 
                     size: 24,
-                    weight: 600,
                   )
                 : null,
           ),
@@ -340,7 +341,6 @@ class _ColorSelector extends ConsumerWidget {
   }
   
   Color _getContrastColor(Color color) {
-    // Calculate luminance to determine if we should use white or black text
     final luminance = color.computeLuminance();
     return luminance > 0.5 ? Colors.black : Colors.white;
   }
@@ -363,25 +363,13 @@ class _ThemeSelector extends ConsumerWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     
     final themes = [
-      {
-        'theme': TaningTheme.midnight,
-        'label': 'Midnight',
-        'color': Colors.indigo
-      },
-      {
-        'theme': TaningTheme.sunrise,
-        'label': 'Sunrise',
-        'color': Colors.orange
-      },
+      {'theme': TaningTheme.midnight, 'label': 'Midnight', 'color': Colors.indigo},
+      {'theme': TaningTheme.sunrise, 'label': 'Sunrise', 'color': Colors.orange},
       {'theme': TaningTheme.forest, 'label': 'Forest', 'color': Colors.green},
       {'theme': TaningTheme.ocean, 'label': 'Ocean', 'color': Colors.blue},
       {'theme': TaningTheme.sakura, 'label': 'Sakura', 'color': Colors.pink},
       {'theme': TaningTheme.mono, 'label': 'Mono', 'color': Colors.grey},
-      {
-        'theme': TaningTheme.filipino,
-        'label': 'Filipino',
-        'color': Colors.amber
-      },
+      {'theme': TaningTheme.filipino, 'label': 'Filipino', 'color': Colors.amber},
     ];
 
     return Wrap(
@@ -404,7 +392,7 @@ class _ThemeSelector extends ConsumerWidget {
               ? CircleAvatar(
                   backgroundColor: accentColor,
                   radius: 8,
-                  child: Icon(Icons.check, size: 12, color: Colors.white),
+                  child: const Icon(Icons.check, size: 12, color: Colors.white),
                 )
               : CircleAvatar(
                   backgroundColor: color.withValues(alpha: 0.3),
@@ -434,26 +422,10 @@ class _StyleSelector extends ConsumerWidget {
     
     final styles = [
       {'style': CountdownStyle.simple, 'label': 'Simple', 'example': '14d'},
-      {
-        'style': CountdownStyle.detailed,
-        'label': 'Detailed',
-        'example': '14d 6h 42m'
-      },
-      {
-        'style': CountdownStyle.full,
-        'label': 'Full',
-        'example': '14d 6h 42m 12s'
-      },
-      {
-        'style': CountdownStyle.progress,
-        'label': 'Progress',
-        'example': 'Day 14/30'
-      },
-      {
-        'style': CountdownStyle.calendar,
-        'label': 'Calendar',
-        'example': '14d • Aug 24'
-      },
+      {'style': CountdownStyle.detailed, 'label': 'Detailed', 'example': '14d 6h 42m'},
+      {'style': CountdownStyle.full, 'label': 'Full', 'example': '14d 6h 42m 12s'},
+      {'style': CountdownStyle.progress, 'label': 'Progress', 'example': 'Day 14/30'},
+      {'style': CountdownStyle.calendar, 'label': 'Calendar', 'example': '14d • Aug 24'},
     ];
 
     return Wrap(
@@ -464,8 +436,7 @@ class _StyleSelector extends ConsumerWidget {
         return FilterChip(
           label: Text(styleData['label'] as String),
           selected: isSelected,
-          onSelected: (_) =>
-              onStyleSelected(styleData['style'] as CountdownStyle),
+          onSelected: (_) => onStyleSelected(styleData['style'] as CountdownStyle),
           selectedColor: accentColor.withValues(alpha: 0.2),
           backgroundColor: isDark ? Colors.grey.shade800 : Colors.grey.shade100,
           labelStyle: TextStyle(
@@ -476,7 +447,10 @@ class _StyleSelector extends ConsumerWidget {
               ? Icon(Icons.check, size: 16, color: accentColor)
               : Text(
                   styleData['example'] as String,
-                  style: const TextStyle(fontSize: 10),
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: isDark ? Colors.grey.shade500 : Colors.grey.shade600,
+                  ),
                 ),
         );
       }).toList(),
@@ -510,7 +484,10 @@ class _NotificationSettingsState extends State<_NotificationSettings> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Card(
+      color: isDark ? Colors.grey.shade900 : Colors.grey.shade50,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
