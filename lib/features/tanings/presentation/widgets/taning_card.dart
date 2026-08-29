@@ -8,7 +8,6 @@ import 'package:taning/features/tanings/domain/entities/countdown_state.dart';
 import 'package:taning/features/tanings/domain/entities/taning.dart';
 import 'package:taning/features/tanings/presentation/providers/taning_providers.dart';
 import 'package:taning/shared/widgets/countdown_display.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:taning/features/settings/presentation/providers/settings_providers.dart';
 
 class TaningCard extends ConsumerStatefulWidget {

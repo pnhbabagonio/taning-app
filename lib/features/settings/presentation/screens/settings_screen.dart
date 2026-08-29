@@ -66,8 +66,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     context: context,
                     builder: (context) => const ThemeSelectorDialog(),
                   );
-                  setState(() {}); // Refresh to show updated subtitle
+                  setState(() {});
                 },
+                accentColor: accentColor,
               ),
               _buildSettingTile(
                 icon: Icons.color_lens_outlined,
@@ -87,8 +88,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     context: context,
                     builder: (context) => const AccentColorPicker(),
                   );
-                  setState(() {}); // Refresh to show updated accent
+                  setState(() {});
                 },
+                accentColor: accentColor,
               ),
             ],
           ),
@@ -99,13 +101,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 icon: Icons.view_quilt_outlined,
                 title: 'Default View',
                 subtitle: _getViewLabel(settings.defaultView),
-                onTap: () => _showViewSelector(settings),
+                onTap: () => _showViewSelector(settings, accentColor),
+                accentColor: accentColor,
               ),
               _buildSettingTile(
                 icon: Icons.sort_outlined,
                 title: 'Default Sort',
                 subtitle: _getSortLabel(settings.defaultSort),
-                onTap: () => _showSortSelector(settings),
+                onTap: () => _showSortSelector(settings, accentColor),
+                accentColor: accentColor,
               ),
             ],
           ),
@@ -113,7 +117,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             title: 'Notifications',
             children: [
               SwitchListTile(
-                secondary: const Icon(Icons.notifications_outlined, size: 22),
+                secondary: Icon(
+                  Icons.notifications_outlined,
+                  size: 22,
+                  color: accentColor,
+                ),
                 title: const Text('Enable Notifications'),
                 subtitle: const Text('Receive reminders for your Tanings'),
                 value: settings.notificationsEnabled,
@@ -126,6 +134,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   }
                 },
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                activeColor: accentColor,
               ),
             ],
           ),
@@ -137,11 +146,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 title: 'Version',
                 subtitle: _appVersion ?? 'Loading...',
                 onTap: () {},
+                accentColor: accentColor,
               ),
               _buildSettingTile(
                 icon: Icons.privacy_tip_outlined,
                 title: 'Privacy Policy',
-                onTap: () => _showPrivacyPolicyDialog(context),
+                onTap: () => _showPrivacyPolicyDialog(context, accentColor),
+                accentColor: accentColor,
               ),
             ],
           ),
@@ -187,7 +198,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 
-  void _showViewSelector(SettingsState settings) {
+  void _showViewSelector(SettingsState settings, Color accentColor) {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -209,8 +220,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 return ListTile(
                   title: Text(_getViewLabel(view)),
                   trailing: isSelected
-                      ? Icon(Icons.check_circle,
-                          color: Theme.of(context).primaryColor)
+                      ? Icon(
+                          Icons.check_circle,
+                          color: accentColor,
+                        )
                       : null,
                   onTap: () {
                     ref.read(settingsProvider.notifier).setDefaultView(view);
@@ -226,7 +239,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
-  void _showSortSelector(SettingsState settings) {
+  void _showSortSelector(SettingsState settings, Color accentColor) {
     final sorts = [
       {'value': 'soonest', 'label': 'Soonest'},
       {'value': 'latest', 'label': 'Latest'},
@@ -255,8 +268,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 return ListTile(
                   title: Text(sort['label']!),
                   trailing: isSelected
-                      ? Icon(Icons.check_circle,
-                          color: Theme.of(context).primaryColor)
+                      ? Icon(
+                          Icons.check_circle,
+                          color: accentColor,
+                        )
                       : null,
                   onTap: () {
                     ref
@@ -274,7 +289,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
-  void _showPrivacyPolicyDialog(BuildContext context) {
+  void _showPrivacyPolicyDialog(BuildContext context, Color accentColor) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -290,6 +305,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
+            style: TextButton.styleFrom(
+              foregroundColor: accentColor,
+            ),
             child: const Text('Close'),
           ),
         ],
@@ -332,12 +350,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     String? subtitle,
     VoidCallback? onTap,
     Widget? trailing,
+    Color? accentColor,
   }) {
     return ListTile(
-      leading: Icon(icon, size: 22),
+      leading: Icon(
+        icon,
+        size: 22,
+        color: accentColor,
+      ),
       title: Text(title),
       subtitle: subtitle != null ? Text(subtitle) : null,
-      trailing: trailing ?? const Icon(Icons.chevron_right, size: 20),
+      trailing: trailing ?? Icon(
+        Icons.chevron_right,
+        size: 20,
+        color: accentColor,
+      ),
       onTap: onTap,
     );
   }

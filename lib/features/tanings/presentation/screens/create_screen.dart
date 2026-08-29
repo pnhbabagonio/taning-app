@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:taning/features/settings/presentation/providers/settings_providers.dart';
 import 'package:taning/features/tanings/presentation/providers/taning_providers.dart';
 import 'package:taning/features/tanings/presentation/view_models/create_view_model.dart';
 import 'package:taning/features/tanings/presentation/widgets/create_flow/create_flow.dart';
@@ -24,55 +25,55 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final accentColor = ref.watch(accentColorProvider);
+
     return Scaffold(
-      appBar: _buildAppBar(),
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildProgressIndicator(),
-            Expanded(
-              child: PageView(
-                controller: _pageController,
-                onPageChanged: (index) {
-                  setState(() {
-                    _currentStep = index;
-                  });
-                },
-                children: [
-                  TitleStep(
-                    viewModel: _createViewModel,
-                    onNext: () => _goToStep(1),
-                  ),
-                  DateTimeStep(
-                    viewModel: _createViewModel,
-                    onNext: () => _goToStep(2),
-                    onBack: () => _goToStep(0),
-                  ),
-                  TypeStep(
-                    viewModel: _createViewModel,
-                    onNext: () => _goToStep(3),
-                    onBack: () => _goToStep(1),
-                  ),
-                  CustomizeStep(
-                    viewModel: _createViewModel,
-                    onNext: () => _goToStep(4),
-                    onBack: () => _goToStep(2),
-                  ),
-                  PreviewStep(
-                    viewModel: _createViewModel,
-                    onBack: () => _goToStep(3),
-                    onCreate: _createTaning,
-                  ),
-                ],
-              ),
+      appBar: _buildAppBar(accentColor),
+      body: Column(
+        children: [
+          _buildProgressIndicator(accentColor),
+          Expanded(
+            child: PageView(
+              controller: _pageController,
+              onPageChanged: (index) {
+                setState(() {
+                  _currentStep = index;
+                });
+              },
+              children: [
+                TitleStep(
+                  viewModel: _createViewModel,
+                  onNext: () => _goToStep(1),
+                ),
+                DateTimeStep(
+                  viewModel: _createViewModel,
+                  onNext: () => _goToStep(2),
+                  onBack: () => _goToStep(0),
+                ),
+                TypeStep(
+                  viewModel: _createViewModel,
+                  onNext: () => _goToStep(3),
+                  onBack: () => _goToStep(1),
+                ),
+                CustomizeStep(
+                  viewModel: _createViewModel,
+                  onNext: () => _goToStep(4),
+                  onBack: () => _goToStep(2),
+                ),
+                PreviewStep(
+                  viewModel: _createViewModel,
+                  onBack: () => _goToStep(3),
+                  onCreate: _createTaning,
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  PreferredSizeWidget _buildAppBar() {
+  PreferredSizeWidget _buildAppBar(Color accentColor) {
     return AppBar(
       title: const Text('New Taning'),
       backgroundColor: Colors.transparent,
@@ -90,13 +91,16 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
         if (_currentStep > 0)
           TextButton(
             onPressed: _resetCreation,
-            child: const Text('Reset'),
+            child: Text(
+              'Reset',
+              style: TextStyle(color: accentColor),
+            ),
           ),
       ],
     );
   }
 
-  Widget _buildProgressIndicator() {
+  Widget _buildProgressIndicator(Color accentColor) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       child: Row(
@@ -112,7 +116,7 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
                     height: 3,
                     decoration: BoxDecoration(
                       color: isCompleted || isActive
-                          ? Theme.of(context).primaryColor
+                          ? accentColor // Use accent color
                           : Colors.grey.shade300,
                       borderRadius: BorderRadius.circular(2),
                     ),

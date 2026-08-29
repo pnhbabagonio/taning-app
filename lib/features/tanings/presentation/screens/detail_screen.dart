@@ -11,6 +11,7 @@ import 'package:taning/features/tanings/domain/entities/taning.dart';
 import 'package:taning/features/tanings/presentation/providers/taning_providers.dart';
 import 'package:taning/features/tanings/presentation/widgets/progress_indicators.dart';
 import 'package:taning/features/notifications/presentation/screens/notification_settings_screen.dart';
+import 'package:taning/features/settings/presentation/providers/settings_providers.dart';
 
 class DetailScreen extends ConsumerStatefulWidget {
   final String id;
@@ -239,7 +240,7 @@ class _DetailScreenState extends ConsumerState<DetailScreen>
 
 // MARK: - Detail Content
 
-class _DetailContent extends StatelessWidget {
+class _DetailContent extends ConsumerWidget {
   final Taning taning;
   final CountdownState state;
   final VoidCallback onFullscreen;
@@ -261,15 +262,16 @@ class _DetailContent extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final color = taning.color.toColor();
     final icon = IconData(
       taning.icon.codePoint,
       fontFamily: taning.icon.family ?? 'MaterialIcons',
     );
+    final accentColor = ref.watch(accentColorProvider);
 
     return Scaffold(
-      appBar: _buildAppBar(context, color),
+      appBar: _buildAppBar(context, color, accentColor),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -280,14 +282,14 @@ class _DetailContent extends StatelessWidget {
             const SizedBox(height: 32),
             _buildInformationSection(),
             const SizedBox(height: 32),
-            _buildActionButtons(context),
+            _buildActionButtons(context, accentColor),
           ],
         ),
       ),
     );
   }
 
-  AppBar _buildAppBar(BuildContext context, Color color) {
+  AppBar _buildAppBar(BuildContext context, Color color, Color accentColor) {
     return AppBar(
       title: Text(
         taning.title,
@@ -305,14 +307,16 @@ class _DetailContent extends StatelessWidget {
           icon: const Icon(Icons.fullscreen),
           onPressed: onFullscreen,
           tooltip: 'Fullscreen',
+          color: accentColor,
         ),
         IconButton(
           icon: const Icon(Icons.share_outlined),
           onPressed: () => _shareTaning(context),
           tooltip: 'Share',
+          color: accentColor,
         ),
         PopupMenuButton<String>(
-          icon: const Icon(Icons.more_vert),
+          icon: Icon(Icons.more_vert, color: accentColor),
           onSelected: (value) {
             switch (value) {
               case 'edit':
@@ -375,7 +379,6 @@ class _DetailContent extends StatelessWidget {
                 ],
               ),
             ),
-            // In detail_screen.dart - add this to popup menu items
             const PopupMenuItem(
               value: 'notifications',
               child: Row(
@@ -736,7 +739,7 @@ class _DetailContent extends StatelessWidget {
     }
   }
 
-  Widget _buildActionButtons(BuildContext context) {
+  Widget _buildActionButtons(BuildContext context, Color accentColor) {
     return Row(
       children: [
         Expanded(
@@ -744,6 +747,10 @@ class _DetailContent extends StatelessWidget {
             onPressed: onEdit,
             icon: const Icon(Icons.edit_outlined),
             label: const Text('Edit'),
+            style: OutlinedButton.styleFrom(
+              side: BorderSide(color: accentColor),
+              foregroundColor: accentColor,
+            ),
           ),
         ),
         const SizedBox(width: 12),
@@ -752,6 +759,10 @@ class _DetailContent extends StatelessWidget {
             onPressed: onFullscreen,
             icon: const Icon(Icons.fullscreen),
             label: const Text('Fullscreen'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: accentColor,
+              foregroundColor: Colors.white,
+            ),
           ),
         ),
       ],

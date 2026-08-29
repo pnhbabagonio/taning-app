@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:taning/features/settings/presentation/providers/settings_providers.dart';
 import 'package:taning/features/tanings/domain/entities/taning.dart';
 import 'package:taning/features/tanings/presentation/providers/taning_providers.dart';
 import 'package:taning/features/tanings/presentation/view_models/create_view_model.dart';
@@ -53,6 +54,8 @@ class _EditScreenState extends ConsumerState<EditScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final accentColor = ref.watch(accentColorProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Edit Taning'),
@@ -64,15 +67,16 @@ class _EditScreenState extends ConsumerState<EditScreen> {
         actions: [
           TextButton(
             onPressed: _saveChanges,
-            child: const Text('Save'),
+            child: Text(
+              'Save',
+              style: TextStyle(color: accentColor),
+            ),
           ),
         ],
       ),
       body: Column(
         children: [
-          // Progress indicator
-          _buildProgressIndicator(),
-          // Pages
+          _buildProgressIndicator(accentColor),
           Expanded(
             child: PageView(
               controller: _pageController,
@@ -109,7 +113,7 @@ class _EditScreenState extends ConsumerState<EditScreen> {
     );
   }
 
-  Widget _buildProgressIndicator() {
+  Widget _buildProgressIndicator(Color accentColor) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       child: Row(
@@ -125,7 +129,7 @@ class _EditScreenState extends ConsumerState<EditScreen> {
                     height: 3,
                     decoration: BoxDecoration(
                       color: isCompleted || isActive
-                          ? Theme.of(context).primaryColor
+                          ? accentColor // Use accent color
                           : Colors.grey.shade300,
                       borderRadius: BorderRadius.circular(2),
                     ),
