@@ -2,7 +2,9 @@
 import 'package:drift/drift.dart';
 
 class TaningTable extends Table {
+  // Mark id as the primary key
   TextColumn get id => text()();
+  
   TextColumn get title => text()();
   TextColumn get description => text().nullable()();
   
@@ -34,10 +36,9 @@ class TaningTable extends Table {
   TextColumn get recurrence => text().nullable()(); // JSON string
   BoolColumn get isAllDay => boolean().nullable()();
   
+  // Define id as the primary key
   @override
-  List<Set<Column>> get uniqueKeys => [
-    {id},
-  ];
+  Set<Column> get primaryKey => {id};
 }
 
 enum TaningType { countdown, duration, countUp, recurring }

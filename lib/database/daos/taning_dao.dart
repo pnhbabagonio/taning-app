@@ -13,61 +13,9 @@ class TaningDao extends DatabaseAccessor<AppDatabase> with _$TaningDaoMixin {
     return into(taningTable).insert(taning);
   }
   
-  // FIX: Use update() instead of replace() for better error handling
+  // Now replace() works because we have a primary key
   Future<bool> updateTaning(TaningTableCompanion taning) {
     return update(taningTable).replace(taning);
-  }
-  
-  // Alternative: Update specific fields only - FIXED
-  Future<bool> updateTaningFields(
-    String id, {
-    String? title,
-    String? description,
-    DateTime? startDate,
-    DateTime? endDate,
-    String? timezone,
-    String? icon,
-    String? color,
-    TaningType? type, // Remove 'database.' prefix
-    TaningTheme? theme, // Remove 'database.' prefix
-    CountdownStyle? countdownStyle, // Remove 'database.' prefix
-    String? notificationSettings,
-    bool? isCompleted,
-    bool? isArchived,
-    bool? isPinned,
-    DateTime? completedAt,
-    DateTime? lastNotifiedAt,
-    DateTime? updatedAt,
-    String? categoryId,
-    String? recurrence,
-    bool? isAllDay,
-  }) {
-    final companion = TaningTableCompanion(
-      id: Value(id),
-      title: Value(title ?? ''),
-      description: Value(description),
-      startDate: Value(startDate),
-      endDate: Value(endDate),
-      timezone: Value(timezone),
-      icon: Value(icon ?? '{"codePoint":59625}'),
-      color: Value(color ?? '{"value":4282568421}'),
-      type: Value(type ?? TaningType.countdown), // Use enum directly
-      theme: Value(theme ?? TaningTheme.midnight), // Use enum directly
-      countdownStyle: Value(countdownStyle ?? CountdownStyle.detailed), // Use enum directly
-      notificationSettings: Value(notificationSettings ?? '{"enabled":true,"oneDayBefore":false,"threeDaysBefore":false,"sevenDaysBefore":false,"oneHourBefore":false,"thirtyMinutesBefore":false,"atExactTime":false}'),
-      isCompleted: Value(isCompleted ?? false),
-      isArchived: Value(isArchived ?? false),
-      isPinned: Value(isPinned ?? false),
-      completedAt: Value(completedAt),
-      lastNotifiedAt: Value(lastNotifiedAt),
-      createdAt: Value(DateTime.now()),
-      updatedAt: Value(updatedAt ?? DateTime.now()),
-      categoryId: Value(categoryId),
-      recurrence: Value(recurrence),
-      isAllDay: Value(isAllDay),
-    );
-    
-    return update(taningTable).replace(companion);
   }
   
   Future<void> deleteTaning(String id) {

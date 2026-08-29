@@ -296,11 +296,7 @@ class $TaningTableTable extends TaningTable
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => const {};
-  @override
-  List<Set<GeneratedColumn>> get uniqueKeys => [
-        {id},
-      ];
+  Set<GeneratedColumn> get $primaryKey => {id};
   @override
   TaningTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
