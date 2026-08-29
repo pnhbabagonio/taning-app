@@ -18,7 +18,7 @@ class TaningDao extends DatabaseAccessor<AppDatabase> with _$TaningDaoMixin {
     return update(taningTable).replace(taning);
   }
   
-  // Alternative: Update specific fields only
+  // Alternative: Update specific fields only - FIXED
   Future<bool> updateTaningFields(
     String id, {
     String? title,
@@ -28,9 +28,9 @@ class TaningDao extends DatabaseAccessor<AppDatabase> with _$TaningDaoMixin {
     String? timezone,
     String? icon,
     String? color,
-    database.TaningType? type,
-    database.TaningTheme? theme,
-    database.CountdownStyle? countdownStyle,
+    TaningType? type, // Remove 'database.' prefix
+    TaningTheme? theme, // Remove 'database.' prefix
+    CountdownStyle? countdownStyle, // Remove 'database.' prefix
     String? notificationSettings,
     bool? isCompleted,
     bool? isArchived,
@@ -51,9 +51,9 @@ class TaningDao extends DatabaseAccessor<AppDatabase> with _$TaningDaoMixin {
       timezone: Value(timezone),
       icon: Value(icon ?? '{"codePoint":59625}'),
       color: Value(color ?? '{"value":4282568421}'),
-      type: Value(type ?? database.TaningType.countdown),
-      theme: Value(theme ?? database.TaningTheme.midnight),
-      countdownStyle: Value(countdownStyle ?? database.CountdownStyle.detailed),
+      type: Value(type ?? TaningType.countdown), // Use enum directly
+      theme: Value(theme ?? TaningTheme.midnight), // Use enum directly
+      countdownStyle: Value(countdownStyle ?? CountdownStyle.detailed), // Use enum directly
       notificationSettings: Value(notificationSettings ?? '{"enabled":true,"oneDayBefore":false,"threeDaysBefore":false,"sevenDaysBefore":false,"oneHourBefore":false,"thirtyMinutesBefore":false,"atExactTime":false}'),
       isCompleted: Value(isCompleted ?? false),
       isArchived: Value(isArchived ?? false),
