@@ -276,7 +276,7 @@ class _DetailContent extends ConsumerWidget {
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [
-            _buildCountdownDisplay(color, icon),
+            _buildCountdownDisplay(color, icon, accentColor),
             const SizedBox(height: 32),
             _buildProgressSection(color),
             const SizedBox(height: 32),
@@ -395,7 +395,11 @@ class _DetailContent extends ConsumerWidget {
     );
   }
 
-  Widget _buildCountdownDisplay(Color color, IconData icon) {
+  Widget _buildCountdownDisplay(
+    Color color,
+    IconData icon,
+    Color accentColor,
+  ) {
     final isFinished = state.isFinished || state.isOverdue;
     final isOverdue = state.isOverdue;
 
@@ -421,7 +425,7 @@ class _DetailContent extends ConsumerWidget {
               color: color.withValues(alpha: 0.15),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: color, size: 40),
+            child: Icon(icon, color: accentColor, size: 40),
           ),
           const SizedBox(height: 16),
           Text(
@@ -761,7 +765,7 @@ class _DetailContent extends ConsumerWidget {
             label: const Text('Fullscreen'),
             style: ElevatedButton.styleFrom(
               backgroundColor: accentColor,
-              foregroundColor: Colors.white,
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
             ),
           ),
         ),

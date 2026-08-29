@@ -58,6 +58,7 @@ class CreateViewModel {
       theme: selectedTheme,
       countdownStyle: selectedStyle,
       notificationSettings: notificationSettings,
+      recurrence: recurrencePattern,
       isAllDay: isAllDay,
     );
   }

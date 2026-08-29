@@ -36,7 +36,8 @@ class AppColors {
   static const Color lightBackground = Color(0xFFFAFAF9);
   static const Color lightSurface = Color(0xFFFFFFFF);
   static const Color lightSurfaceVariant = Color(0xFFF5F5F4);
-  static const Color lightCard = Color(0xFFFFFFFF);
+  // A warm surface gives cards gentle separation from the page background.
+  static const Color lightCard = Color(0xFFFFFDFC);
   static const Color lightDivider = Color(0xFFE5E5E5);
   static const Color lightShadow = Color.fromRGBO(15, 23, 42, 0.08);
   
@@ -49,7 +50,7 @@ class AppColors {
   static const Color darkBackground = Color(0xFF0F0F0F);
   static const Color darkSurface = Color(0xFF1A1A1A);
   static const Color darkSurfaceVariant = Color(0xFF262626);
-  static const Color darkCard = Color(0xFF1F1F1F);
+  static const Color darkCard = Color(0xFF202020);
   static const Color darkDivider = Color(0xFF2E2E2E);
   static const Color darkShadow = Color.fromRGBO(0, 0, 0, 0.3);
   

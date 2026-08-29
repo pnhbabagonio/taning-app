@@ -178,7 +178,7 @@ class _CustomizeStepState extends ConsumerState<CustomizeStep> {
                     onPressed: widget.onNext,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: ref.watch(accentColorProvider),
-                      foregroundColor: Colors.white,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
                       disabledBackgroundColor: Colors.grey.shade300,
                     ),
                     child: const Text('Preview'),
@@ -195,7 +195,7 @@ class _CustomizeStepState extends ConsumerState<CustomizeStep> {
 
 // MARK: - Icon Selector
 
-class _IconSelector extends StatelessWidget {
+class _IconSelector extends ConsumerWidget {
   final TaningIcon selectedIcon;
   final Function(TaningIcon) onIconSelected;
 
@@ -205,7 +205,10 @@ class _IconSelector extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final accentColor = ref.watch(accentColorProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     final icons = [
       const TaningIcon(codePoint: 0xE8ED, family: 'MaterialIcons'), // flight
       const TaningIcon(codePoint: 0xE8F0, family: 'MaterialIcons'), // cake
@@ -236,19 +239,20 @@ class _IconSelector extends StatelessWidget {
       runSpacing: 8,
       children: icons.map((icon) {
         final isSelected = icon.codePoint == selectedIcon.codePoint;
-        return InkWell(
+        return GestureDetector(
           onTap: () => onIconSelected(icon),
-          borderRadius: BorderRadius.circular(8),
           child: Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: isSelected
-                  ? Theme.of(context).primaryColor
-                  : Colors.grey.shade100,
-              borderRadius: BorderRadius.circular(8),
+                  ? accentColor.withValues(alpha: 0.15)
+                  : isDark
+                    ? Colors.grey.shade800
+                    : Colors.grey.shade100,
+              borderRadius: BorderRadius.circular(10),
               border: Border.all(
                 color: isSelected
-                    ? Theme.of(context).primaryColor
+                    ? accentColor
                     : Colors.transparent,
                 width: 2,
               ),
@@ -256,7 +260,7 @@ class _IconSelector extends StatelessWidget {
             child: Icon(
               IconData(icon.codePoint,
                   fontFamily: icon.family ?? 'MaterialIcons'),
-              color: isSelected ? Colors.white : Colors.grey.shade700,
+              color: isSelected ? accentColor : (isDark ? Colors.grey.shade400 : Colors.grey.shade700),
               size: 24,
             ),
           ),
@@ -268,7 +272,7 @@ class _IconSelector extends StatelessWidget {
 
 // MARK: - Color Selector
 
-class _ColorSelector extends StatelessWidget {
+class _ColorSelector extends ConsumerWidget {
   final TaningColor selectedColor;
   final Function(TaningColor) onColorSelected;
 
@@ -278,7 +282,9 @@ class _ColorSelector extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final accentColor = ref.watch(accentColorProvider);
+    
     const presets = [
       TaningColor(value: 0xFF4F46E5, name: 'Indigo'),
       TaningColor(value: 0xFF7C3AED, name: 'Purple'),
@@ -296,35 +302,53 @@ class _ColorSelector extends StatelessWidget {
       runSpacing: 12,
       children: presets.map((color) {
         final isSelected = color.value == selectedColor.value;
-        return InkWell(
+        return GestureDetector(
           onTap: () => onColorSelected(color),
-          borderRadius: BorderRadius.circular(12),
           child: Container(
-            width: 44,
-            height: 44,
+            width: 50,
+            height: 50,
             decoration: BoxDecoration(
               color: Color(color.value),
               shape: BoxShape.circle,
               border: Border.all(
                 color: isSelected
-                    ? Theme.of(context).primaryColor
+                    ? Colors.white.withValues(alpha: 0.8)
                     : Colors.transparent,
                 width: 3,
               ),
+              boxShadow: isSelected
+                  ? [
+                      BoxShadow(
+                        color: Color(color.value).withValues(alpha: 0.4),
+                        blurRadius: 8,
+                        spreadRadius: 2,
+                      ),
+                    ]
+                  : [],
             ),
             child: isSelected
-                ? const Icon(Icons.check, color: Colors.white, size: 20)
+                ? Icon(Icons.check, 
+                    color: _getContrastColor(Color(color.value)), 
+                    size: 24,
+                    weight: 600,
+                  )
                 : null,
           ),
         );
       }).toList(),
     );
   }
+  
+  Color _getContrastColor(Color color) {
+    // Calculate luminance to determine if we should use white or black text
+    final luminance = color.computeLuminance();
+    return luminance > 0.5 ? Colors.black : Colors.white;
+  }
 }
 
 // MARK: - Theme Selector
 
-class _ThemeSelector extends StatelessWidget {
+class _ThemeSelector extends ConsumerWidget {
   final TaningTheme selectedTheme;
   final Function(TaningTheme) onThemeSelected;
 
@@ -334,7 +358,10 @@ class _ThemeSelector extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final accentColor = ref.watch(accentColorProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     final themes = [
       {
         'theme': TaningTheme.midnight,
@@ -363,16 +390,26 @@ class _ThemeSelector extends StatelessWidget {
       children: themes.map((themeData) {
         final isSelected = selectedTheme == themeData['theme'];
         final color = themeData['color'] as Color;
-        return ChoiceChip(
+        return InputChip(
           label: Text(themeData['label'] as String),
           selected: isSelected,
           onSelected: (_) => onThemeSelected(themeData['theme'] as TaningTheme),
-          selectedColor: color.withValues(alpha: 0.2),
-          backgroundColor: Colors.grey.shade100,
-          avatar: CircleAvatar(
-            backgroundColor: color,
-            radius: 8,
+          selectedColor: accentColor.withValues(alpha: 0.2),
+          backgroundColor: isDark ? Colors.grey.shade800 : Colors.grey.shade100,
+          labelStyle: TextStyle(
+            color: isSelected ? accentColor : (isDark ? Colors.grey.shade300 : Colors.grey.shade700),
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
           ),
+          avatar: isSelected
+              ? CircleAvatar(
+                  backgroundColor: accentColor,
+                  radius: 8,
+                  child: Icon(Icons.check, size: 12, color: Colors.white),
+                )
+              : CircleAvatar(
+                  backgroundColor: color.withValues(alpha: 0.3),
+                  radius: 8,
+                ),
         );
       }).toList(),
     );
@@ -381,7 +418,7 @@ class _ThemeSelector extends StatelessWidget {
 
 // MARK: - Style Selector
 
-class _StyleSelector extends StatelessWidget {
+class _StyleSelector extends ConsumerWidget {
   final CountdownStyle selectedStyle;
   final Function(CountdownStyle) onStyleSelected;
 
@@ -391,7 +428,10 @@ class _StyleSelector extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final accentColor = ref.watch(accentColorProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     final styles = [
       {'style': CountdownStyle.simple, 'label': 'Simple', 'example': '14d'},
       {
@@ -426,10 +466,18 @@ class _StyleSelector extends StatelessWidget {
           selected: isSelected,
           onSelected: (_) =>
               onStyleSelected(styleData['style'] as CountdownStyle),
-          avatar: Text(
-            styleData['example'] as String,
-            style: const TextStyle(fontSize: 10),
+          selectedColor: accentColor.withValues(alpha: 0.2),
+          backgroundColor: isDark ? Colors.grey.shade800 : Colors.grey.shade100,
+          labelStyle: TextStyle(
+            color: isSelected ? accentColor : (isDark ? Colors.grey.shade300 : Colors.grey.shade700),
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
           ),
+          avatar: isSelected
+              ? Icon(Icons.check, size: 16, color: accentColor)
+              : Text(
+                  styleData['example'] as String,
+                  style: const TextStyle(fontSize: 10),
+                ),
         );
       }).toList(),
     );

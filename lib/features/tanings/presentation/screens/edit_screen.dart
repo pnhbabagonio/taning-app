@@ -176,6 +176,7 @@ class _EditScreenState extends ConsumerState<EditScreen> {
         isPinned: widget.taning.isPinned,
         completedAt: widget.taning.completedAt,
         lastNotifiedAt: widget.taning.lastNotifiedAt,
+        timezone: widget.taning.timezone,
       );
 
       await ref.read(taningRepositoryProvider).save(updatedTaning);
@@ -184,7 +185,7 @@ class _EditScreenState extends ConsumerState<EditScreen> {
         Navigator.pop(context, true);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${updatedTaning.title} updated! ✏️'),
+            content: Text('${updatedTaning.title} updated!'),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -193,7 +194,9 @@ class _EditScreenState extends ConsumerState<EditScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error updating Taning: $e'),
+            content: const Text(
+              'Couldn\'t update this Taning. Please try again.',
+            ),
             backgroundColor: Colors.red,
             behavior: SnackBarBehavior.floating,
           ),

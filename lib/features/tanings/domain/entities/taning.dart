@@ -46,6 +46,7 @@ class Taning with _$Taning {
     TaningTheme? theme,
     CountdownStyle? countdownStyle,
     NotificationSettings? notificationSettings,
+    RecurrencePattern? recurrence,
     bool? isAllDay, String? description,
   }) {
     return Taning(
@@ -63,6 +64,7 @@ class Taning with _$Taning {
       isCompleted: false,
       isArchived: false,
       isPinned: false,
+      recurrence: recurrence,
       createdAt: DateTime.now(),
       isAllDay: isAllDay ?? false,
     );

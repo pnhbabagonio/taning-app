@@ -42,9 +42,17 @@ class _TitleStepState extends ConsumerState<TitleStep> {
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final accentColor = ref.watch(accentColorProvider);
+    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
     
-    return Padding(
-      padding: const EdgeInsets.all(24),
+    return SingleChildScrollView(
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+      padding: EdgeInsets.fromLTRB(
+        24,
+        24,
+        24,
+        24 + keyboardHeight + bottomPadding + 8,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -104,7 +112,7 @@ class _TitleStepState extends ConsumerState<TitleStep> {
               color: Theme.of(context).textTheme.bodyLarge?.color,
             ),
           ),
-          const Spacer(),
+          const SizedBox(height: 32),
           // Quick templates
           const Text(
             'Quick templates',
@@ -182,23 +190,20 @@ class _TitleStepState extends ConsumerState<TitleStep> {
             ],
           ),
           const SizedBox(height: 24),
-          Padding(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).padding.bottom + 8,
-            ),
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: widget.viewModel.isTitleValid ? widget.onNext : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: accentColor,
-                  foregroundColor: Colors.white,
-                  disabledBackgroundColor: Colors.grey.shade300,
-                ),
-                child: const Text('Next'),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: widget.viewModel.isTitleValid ? widget.onNext : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: accentColor,
+                foregroundColor: Colors.white,
+                disabledBackgroundColor: Colors.grey.shade300,
               ),
+              child: const Text('Next'),
             ),
           ),
+          // Add extra bottom space for keyboard
+          const SizedBox(height: 16),
         ],
       ),
     );

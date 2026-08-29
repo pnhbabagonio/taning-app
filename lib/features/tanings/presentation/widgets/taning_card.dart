@@ -89,7 +89,6 @@ class _TaningCardState extends ConsumerState<TaningCard> {
 
   @override
   Widget build(BuildContext context) {
-    final color = widget.taning.color.toColor();
     final icon = IconData(
       widget.taning.icon.codePoint,
       fontFamily: widget.taning.icon.family ?? 'MaterialIcons',
@@ -99,44 +98,36 @@ class _TaningCardState extends ConsumerState<TaningCard> {
       onTap: widget.onTap,
       onLongPress: widget.onLongPress,
       child: Card(
-        elevation: 2,
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: _buildCardContent(color, icon),
+        child: _buildCardContent(icon),
       ),
     );
   }
 
-  Widget _buildCardContent(Color color, IconData icon) {
+  Widget _buildCardContent(IconData icon) {
     switch (widget.variant) {
       case TaningCardVariant.standard:
         return _StandardCard(
           taning: widget.taning,
           state: _currentState,
-          color: color,
           icon: icon,
         );
       case TaningCardVariant.compact:
         return _CompactCard(
           taning: widget.taning,
           state: _currentState,
-          color: color,
           icon: icon,
         );
       case TaningCardVariant.focus:
         return _FocusCard(
           taning: widget.taning,
           state: _currentState,
-          color: color,
           icon: icon,
         );
       case TaningCardVariant.mini:
         return _MiniCard(
           taning: widget.taning,
           state: _currentState,
-          color: color,
           icon: icon,
         );
     }
@@ -156,13 +147,11 @@ enum TaningCardVariant {
 class _StandardCard extends ConsumerWidget {
   final Taning taning;
   final CountdownState state;
-  final Color color;
   final IconData icon;
 
   const _StandardCard({
     required this.taning,
     required this.state,
-    required this.color,
     required this.icon,
   });
 
@@ -180,12 +169,12 @@ class _StandardCard extends ConsumerWidget {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  color: accentColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(icon, color: color, size: 20),
+                child: Icon(icon, color: accentColor, size: 22),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -193,32 +182,33 @@ class _StandardCard extends ConsumerWidget {
                   taning.title,
                   style: TextStyle(
                     fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w700,
                     color: Theme.of(context).textTheme.bodyLarge?.color,
+                    letterSpacing: -0.2,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
               if (taning.isPinned)
-                const Icon(Icons.push_pin, size: 16, color: Colors.grey),
+                Icon(Icons.push_pin, size: 16, color: accentColor.withValues(alpha: 0.6)),
               if (isFinished)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
                     color: state.isOverdue
-                        ? Colors.red.shade100
-                        : Colors.green.shade100,
+                        ? Colors.red.withValues(alpha: 0.1)
+                        : Colors.green.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     state.isOverdue ? 'Overdue' : 'Done',
                     style: TextStyle(
                       fontSize: 11,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
                       color: state.isOverdue
-                          ? Colors.red.shade800
-                          : Colors.green.shade800,
+                          ? Colors.red.shade700
+                          : Colors.green.shade700,
                     ),
                   ),
                 ),
@@ -235,7 +225,6 @@ class _StandardCard extends ConsumerWidget {
                 child: CountdownDisplay(
                   duration: state.remainingDuration ?? Duration.zero,
                   style: taning.countdownStyle,
-                  // taningColor is now optional, accentColor will be used
                   isOverdue: state.isOverdue,
                   isFinished: state.isFinished || state.status == CountdownStatus.ended,
                 ),
@@ -252,13 +241,13 @@ class _StandardCard extends ConsumerWidget {
           if (state.targetDate != null)
             Row(
               children: [
-                const Icon(Icons.calendar_today, size: 14, color: Colors.grey),
+                Icon(Icons.calendar_today, size: 14, color: accentColor.withValues(alpha: 0.5)),
                 const SizedBox(width: 6),
                 Text(
                   CountdownFormatter.formatDate(state.targetDate!),
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey.shade600,
+                    color: Theme.of(context).textTheme.bodySmall?.color?.withValues(alpha: 0.6),
                   ),
                 ),
                 const Spacer(),
@@ -268,6 +257,7 @@ class _StandardCard extends ConsumerWidget {
                     'Day ${state.currentDay} of ${state.totalDays}',
                     style: TextStyle(
                       fontSize: 12,
+                      fontWeight: FontWeight.w600,
                       color: accentColor.withValues(alpha: 0.7),
                     ),
                   ),
@@ -297,13 +287,11 @@ class _StandardCard extends ConsumerWidget {
 class _CompactCard extends ConsumerWidget {
   final Taning taning;
   final CountdownState state;
-  final Color color;
   final IconData icon;
 
   const _CompactCard({
     required this.taning,
     required this.state,
-    required this.color,
     required this.icon,
   });
 
@@ -316,12 +304,12 @@ class _CompactCard extends ConsumerWidget {
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(6),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(6),
+              color: accentColor.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(icon, color: color, size: 16),
+            child: Icon(icon, color: accentColor, size: 18),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -329,7 +317,7 @@ class _CompactCard extends ConsumerWidget {
               taning.title,
               style: TextStyle(
                 fontSize: 14,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w600,
                 color: Theme.of(context).textTheme.bodyLarge?.color,
               ),
               maxLines: 1,
@@ -337,28 +325,41 @@ class _CompactCard extends ConsumerWidget {
             ),
           ),
           if (state.status == CountdownStatus.overdue)
-            const Text(
-              'Overdue',
-              style: TextStyle(
-                color: Colors.red,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.red.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: const Text(
+                'Overdue',
+                style: TextStyle(
+                  color: Colors.red,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             )
           else if (state.isFinished || state.status == CountdownStatus.ended)
-            const Text(
-              'Done',
-              style: TextStyle(
-                color: Colors.green,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.green.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: const Text(
+                'Done',
+                style: TextStyle(
+                  color: Colors.green,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             )
           else
             CountdownDisplay(
               duration: state.remainingDuration ?? Duration.zero,
               style: CountdownStyle.simple,
-              // No taningColor needed, uses accentColor
             ),
           const SizedBox(width: 8),
           if (state.progressPercentage != null)
@@ -368,7 +369,7 @@ class _CompactCard extends ConsumerWidget {
               child: CircularProgressIndicator(
                 value: state.progressPercentage,
                 strokeWidth: 2,
-                backgroundColor: Colors.grey.shade200,
+                backgroundColor: accentColor.withValues(alpha: 0.1),
                 valueColor: AlwaysStoppedAnimation<Color>(accentColor),
               ),
             ),
@@ -382,13 +383,11 @@ class _CompactCard extends ConsumerWidget {
 class _FocusCard extends ConsumerWidget {
   final Taning taning;
   final CountdownState state;
-  final Color color;
   final IconData icon;
 
   const _FocusCard({
     required this.taning,
     required this.state,
-    required this.color,
     required this.icon,
   });
 
@@ -406,26 +405,27 @@ class _FocusCard extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
+                color: accentColor.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, color: color, size: 32),
+              child: Icon(icon, color: accentColor, size: 40),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             Text(
               taning.title,
               style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
                 color: Theme.of(context).textTheme.bodyLarge?.color,
+                letterSpacing: -0.3,
               ),
               textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 28),
             CountdownDisplay(
               duration: state.remainingDuration ?? Duration.zero,
               style: CountdownStyle.full,
@@ -434,29 +434,34 @@ class _FocusCard extends ConsumerWidget {
                   state.isFinished || state.status == CountdownStatus.ended,
             ),
             if (state.targetDate != null) ...[
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
               Text(
                 CountdownFormatter.formatDate(state.targetDate!),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
-                  color: Colors.grey,
+                  color: Theme.of(context).textTheme.bodySmall?.color?.withValues(alpha: 0.6),
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],
             if (state.progressPercentage != null) ...[
-              const SizedBox(height: 16),
-              LinearProgressIndicator(
-                value: state.progressPercentage,
-                backgroundColor: Colors.grey.shade200,
-                valueColor: AlwaysStoppedAnimation<Color>(accentColor),
-                minHeight: 4,
+              const SizedBox(height: 20),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: LinearProgressIndicator(
+                  value: state.progressPercentage,
+                  backgroundColor: accentColor.withValues(alpha: 0.1),
+                  valueColor: AlwaysStoppedAnimation<Color>(accentColor),
+                  minHeight: 6,
+                ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 10),
               Text(
-                '${(state.progressPercentage! * 100).toStringAsFixed(0)}%',
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey,
+                '${(state.progressPercentage! * 100).toStringAsFixed(0)}% Complete',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: accentColor.withValues(alpha: 0.8),
                 ),
               ),
             ],
@@ -471,55 +476,66 @@ class _FocusCard extends ConsumerWidget {
 class _MiniCard extends ConsumerWidget {
   final Taning taning;
   final CountdownState state;
-  final Color color;
   final IconData icon;
 
   const _MiniCard({
     required this.taning,
     required this.state,
-    required this.color,
     required this.icon,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final accentColor = ref.watch(accentColorProvider);
     
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.05),
+        color: accentColor.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: color.withValues(alpha: 0.2),
-          width: 1,
+          color: accentColor.withValues(alpha: 0.15),
+          width: 1.5,
         ),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, color: color, size: 20),
-          const SizedBox(height: 4),
+          Icon(icon, color: accentColor, size: 22),
+          const SizedBox(height: 6),
           Text(
             taning.title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
+              color: Theme.of(context).textTheme.bodySmall?.color,
             ),
             maxLines: 1,
+            textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,
           ),
+          const SizedBox(height: 4),
           if (!state.isFinished && state.status != CountdownStatus.ended)
             CountdownDisplay(
               duration: state.remainingDuration ?? Duration.zero,
               style: CountdownStyle.simple,
             ),
           if (state.isFinished || state.status == CountdownStatus.ended)
-            Text(
-              state.isOverdue ? 'Overdue' : 'Done',
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: Colors.green,
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: state.isOverdue
+                    ? Colors.red.withValues(alpha: 0.1)
+                    : Colors.green.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                state.isOverdue ? 'Overdue' : 'Done',
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  color: state.isOverdue ? Colors.red : Colors.green,
+                ),
               ),
             ),
         ],

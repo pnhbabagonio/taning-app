@@ -48,13 +48,24 @@ class AppTheme {
       brightness: brightness,
       colorScheme: colorScheme,
       textTheme: textTheme,
+      scaffoldBackgroundColor:
+          isDark ? AppColors.darkBackground : AppColors.lightBackground,
       
-      cardTheme: const CardThemeData(
-        elevation: 1,
+      cardTheme: CardThemeData(
+        elevation: 0,
+        shadowColor: isDark 
+            ? AppColors.darkShadow 
+            : AppColors.lightShadow,
+        color: isDark ? AppColors.darkCard : AppColors.lightCard,
+        surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(16)),
+          borderRadius: const BorderRadius.all(Radius.circular(16)),
+          side: BorderSide(
+            color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
+          ),
         ),
         clipBehavior: Clip.antiAlias,
+        margin: EdgeInsets.zero,
       ),
       
       appBarTheme: AppBarTheme(
@@ -228,18 +239,24 @@ class AppTheme {
   static ThemeData withAccent(Color accentColor, {Brightness? brightness}) {
     final isDark = brightness == Brightness.dark;
     final base = isDark ? dark : light;
+    final onAccent = ThemeData.estimateBrightnessForColor(accentColor) ==
+            Brightness.dark
+        ? Colors.white
+        : AppColors.lightOnBackground;
     
     return base.copyWith(
       colorScheme: base.colorScheme.copyWith(
         primary: accentColor,
         secondary: accentColor,
+        onPrimary: onAccent,
+        onSecondary: onAccent,
         primaryContainer: accentColor.withValues(alpha: 0.2),
         secondaryContainer: accentColor.withValues(alpha: 0.1),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: accentColor,
-          foregroundColor: Colors.white,
+          foregroundColor: onAccent,
           elevation: 0,
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(12)),
@@ -277,6 +294,39 @@ class AppTheme {
             horizontal: 24,
             vertical: 14,
           ),
+        ),
+      ),
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: accentColor,
+        foregroundColor: onAccent,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(16)),
+        ),
+      ),
+      iconButtonTheme: IconButtonThemeData(
+        style: IconButton.styleFrom(foregroundColor: accentColor),
+      ),
+      appBarTheme: base.appBarTheme.copyWith(
+        iconTheme: IconThemeData(color: accentColor, size: 24),
+        actionsIconTheme: IconThemeData(color: accentColor, size: 24),
+      ),
+      switchTheme: SwitchThemeData(
+        thumbColor: WidgetStateProperty.resolveWith(
+          (states) => states.contains(WidgetState.selected)
+              ? accentColor
+              : null,
+        ),
+        trackColor: WidgetStateProperty.resolveWith(
+          (states) => states.contains(WidgetState.selected)
+              ? accentColor.withValues(alpha: 0.35)
+              : null,
+        ),
+      ),
+      checkboxTheme: CheckboxThemeData(
+        fillColor: WidgetStateProperty.resolveWith(
+          (states) => states.contains(WidgetState.selected)
+              ? accentColor
+              : null,
         ),
       ),
       inputDecorationTheme: base.inputDecorationTheme.copyWith(

@@ -120,7 +120,7 @@ class PreviewStep extends ConsumerWidget {
                     onPressed: onCreate,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: ref.watch(accentColorProvider),
-                      foregroundColor: Colors.white,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
                       disabledBackgroundColor: Colors.grey.shade300,
                     ),
                     child: const Text('Create Taning'),

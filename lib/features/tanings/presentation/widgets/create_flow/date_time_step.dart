@@ -37,9 +37,16 @@ class _DateTimeStepState extends ConsumerState<DateTimeStep> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(24),
+    return SingleChildScrollView(
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+      padding: EdgeInsets.fromLTRB(
+        24,
+        24,
+        24,
+        24 + MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 20),
@@ -130,7 +137,7 @@ class _DateTimeStepState extends ConsumerState<DateTimeStep> {
               });
             },
           ),
-          const Spacer(),
+          const SizedBox(height: 32),
           Padding(
             padding: EdgeInsets.only(
               bottom: MediaQuery.of(context).padding.bottom + 8,
@@ -155,7 +162,7 @@ class _DateTimeStepState extends ConsumerState<DateTimeStep> {
                     onPressed: _isDateValid ? widget.onNext : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: ref.watch(accentColorProvider),
-                      foregroundColor: Colors.white,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
                       disabledBackgroundColor: Colors.grey.shade300,
                     ),
                     child: const Text('Next'),
