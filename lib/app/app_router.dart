@@ -5,7 +5,7 @@ import 'package:taning/features/tanings/presentation/screens/home_screen.dart';
 import 'package:taning/features/tanings/presentation/screens/create_screen.dart';
 import 'package:taning/features/tanings/presentation/screens/detail_screen.dart';
 import 'package:taning/features/tanings/presentation/screens/edit_screen.dart';
-import 'package:taning/features/tanings/presentation/screens/settings_screen.dart';
+import 'package:taning/features/settings/presentation/screens/settings_screen.dart';
 import 'package:taning/features/widgets/presentation/screens/widget_config_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -36,7 +36,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final extra = state.extra as Map<String, dynamic>?;
           if (extra == null || extra['taning'] == null) {
-            // If no taning is provided, go back to home
             return const HomeScreen();
           }
           final taning = extra['taning'] as Taning;
@@ -46,13 +45,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/settings',
         name: 'settings',
-        builder: (context, state) => const SettingsScreen(),
+        builder: (context, state) => const SettingsScreen(), // ✅ Now uses correct screen
       ),
       GoRoute(
-      path: '/widget-config',
-      name: 'widget-config',
-      builder: (context, state) => const WidgetConfigScreen(),
-    ),
+        path: '/widget-config',
+        name: 'widget-config',
+        builder: (context, state) => const WidgetConfigScreen(),
+      ),
     ],
     redirect: (context, state) {
       return null;

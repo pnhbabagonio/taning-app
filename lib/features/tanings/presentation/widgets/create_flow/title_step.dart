@@ -159,11 +159,16 @@ class _TitleStepState extends State<TitleStep> {
             ],
           ),
           const SizedBox(height: 24),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: widget.viewModel.isTitleValid ? widget.onNext : null,
-              child: const Text('Next'),
+          Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).padding.bottom + 8,
+            ),
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: widget.viewModel.isTitleValid ? widget.onNext : null,
+                child: const Text('Next'),
+              ),
             ),
           ),
         ],
