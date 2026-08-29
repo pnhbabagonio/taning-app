@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:taning/features/tanings/domain/entities/taning.dart';
 import 'package:intl/intl.dart';
 import 'package:taning/features/tanings/presentation/view_models/create_view_model.dart';
 import 'package:taning/features/tanings/presentation/widgets/taning_card.dart';
+import 'package:taning/features/settings/presentation/providers/settings_providers.dart';
 
-class PreviewStep extends StatelessWidget {
+class PreviewStep extends ConsumerWidget {
   final CreateViewModel viewModel;
   final VoidCallback onBack;
   final VoidCallback onCreate;
@@ -17,7 +19,7 @@ class PreviewStep extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final taning = viewModel.buildTaning();
 
     return Padding(
@@ -103,6 +105,12 @@ class PreviewStep extends StatelessWidget {
                 Expanded(
                   child: OutlinedButton(
                     onPressed: onBack,
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: ref.watch(accentColorProvider),
+                      side: BorderSide(
+                        color: ref.watch(accentColorProvider),
+                      ),
+                    ),
                     child: const Text('Back'),
                   ),
                 ),
@@ -110,6 +118,11 @@ class PreviewStep extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: onCreate,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: ref.watch(accentColorProvider),
+                      foregroundColor: Colors.white,
+                      disabledBackgroundColor: Colors.grey.shade300,
+                    ),
                     child: const Text('Create Taning'),
                   ),
                 ),

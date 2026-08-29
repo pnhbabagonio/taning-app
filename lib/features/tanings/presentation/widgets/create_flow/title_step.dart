@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:taning/features/tanings/presentation/view_models/create_view_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:taning/features/settings/presentation/providers/settings_providers.dart';
 
-class TitleStep extends StatefulWidget {
+class TitleStep extends ConsumerStatefulWidget {
   final CreateViewModel viewModel;
   final VoidCallback onNext;
 
@@ -12,10 +14,10 @@ class TitleStep extends StatefulWidget {
   });
 
   @override
-  State<TitleStep> createState() => _TitleStepState();
+  ConsumerState<TitleStep> createState() => _TitleStepState();
 }
 
-class _TitleStepState extends State<TitleStep> {
+class _TitleStepState extends ConsumerState<TitleStep> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _focusNode = FocusNode();
@@ -38,6 +40,9 @@ class _TitleStepState extends State<TitleStep> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final accentColor = ref.watch(accentColorProvider);
+    
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -78,6 +83,9 @@ class _TitleStepState extends State<TitleStep> {
                 widget.onNext();
               }
             },
+            style: TextStyle(
+              color: Theme.of(context).textTheme.bodyLarge?.color,
+            ),
           ),
           const SizedBox(height: 16),
           TextField(
@@ -92,6 +100,9 @@ class _TitleStepState extends State<TitleStep> {
             },
             maxLines: 3,
             textInputAction: TextInputAction.done,
+            style: TextStyle(
+              color: Theme.of(context).textTheme.bodyLarge?.color,
+            ),
           ),
           const Spacer(),
           // Quick templates
@@ -110,6 +121,8 @@ class _TitleStepState extends State<TitleStep> {
             children: [
               _TemplateChip(
                 label: '✈️ Vacation',
+                accentColor: accentColor,
+                isDarkMode: isDarkMode,
                 onTap: () {
                   _titleController.text = 'Vacation';
                   widget.viewModel.title = 'Vacation';
@@ -118,6 +131,8 @@ class _TitleStepState extends State<TitleStep> {
               ),
               _TemplateChip(
                 label: '🎓 Graduation',
+                accentColor: accentColor,
+                isDarkMode: isDarkMode,
                 onTap: () {
                   _titleController.text = 'Graduation';
                   widget.viewModel.title = 'Graduation';
@@ -126,6 +141,8 @@ class _TitleStepState extends State<TitleStep> {
               ),
               _TemplateChip(
                 label: '🎂 Birthday',
+                accentColor: accentColor,
+                isDarkMode: isDarkMode,
                 onTap: () {
                   _titleController.text = 'Birthday';
                   widget.viewModel.title = 'Birthday';
@@ -134,6 +151,8 @@ class _TitleStepState extends State<TitleStep> {
               ),
               _TemplateChip(
                 label: '🏃 30-Day Challenge',
+                accentColor: accentColor,
+                isDarkMode: isDarkMode,
                 onTap: () {
                   _titleController.text = '30-Day Challenge';
                   widget.viewModel.title = '30-Day Challenge';
@@ -142,6 +161,8 @@ class _TitleStepState extends State<TitleStep> {
               ),
               _TemplateChip(
                 label: '📝 Deadline',
+                accentColor: accentColor,
+                isDarkMode: isDarkMode,
                 onTap: () {
                   _titleController.text = 'Deadline';
                   widget.viewModel.title = 'Deadline';
@@ -150,6 +171,8 @@ class _TitleStepState extends State<TitleStep> {
               ),
               _TemplateChip(
                 label: '💍 Anniversary',
+                accentColor: accentColor,
+                isDarkMode: isDarkMode,
                 onTap: () {
                   _titleController.text = 'Anniversary';
                   widget.viewModel.title = 'Anniversary';
@@ -167,6 +190,11 @@ class _TitleStepState extends State<TitleStep> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: widget.viewModel.isTitleValid ? widget.onNext : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: accentColor,
+                  foregroundColor: Colors.white,
+                  disabledBackgroundColor: Colors.grey.shade300,
+                ),
                 child: const Text('Next'),
               ),
             ),
@@ -180,18 +208,38 @@ class _TitleStepState extends State<TitleStep> {
 class _TemplateChip extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
+  final Color accentColor;
+  final bool isDarkMode;
 
   const _TemplateChip({
     required this.label,
     required this.onTap,
+    required this.accentColor,
+    required this.isDarkMode,
   });
 
   @override
   Widget build(BuildContext context) {
     return ActionChip(
-      label: Text(label),
+      label: Text(
+        label,
+        style: TextStyle(
+          color: isDarkMode ? Colors.white : Colors.black87,
+        ),
+      ),
       onPressed: onTap,
-      backgroundColor: Colors.grey.shade100,
+      backgroundColor: isDarkMode 
+          ? Colors.grey.shade800 
+          : Colors.grey.shade100,
+      side: BorderSide(
+        color: isDarkMode 
+            ? Colors.grey.shade700 
+            : Colors.grey.shade300,
+        width: 1,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
     );
   }
 }

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:taning/features/tanings/domain/entities/taning.dart';
 import 'package:taning/features/tanings/presentation/view_models/create_view_model.dart';
+import 'package:taning/features/settings/presentation/providers/settings_providers.dart';
 
-class TypeStep extends StatefulWidget {
+class TypeStep extends ConsumerStatefulWidget {
   final CreateViewModel viewModel;
   final VoidCallback onNext;
   final VoidCallback onBack;
@@ -15,10 +17,10 @@ class TypeStep extends StatefulWidget {
   });
 
   @override
-  State<TypeStep> createState() => _TypeStepState();
+  ConsumerState<TypeStep> createState() => _TypeStepState();
 }
 
-class _TypeStepState extends State<TypeStep> {
+class _TypeStepState extends ConsumerState<TypeStep> {
   TaningType _selectedType = TaningType.countdown;
 
   @override
@@ -99,6 +101,12 @@ class _TypeStepState extends State<TypeStep> {
                 Expanded(
                   child: OutlinedButton(
                     onPressed: widget.onBack,
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: ref.watch(accentColorProvider),
+                      side: BorderSide(
+                        color: ref.watch(accentColorProvider),
+                      ),
+                    ),
                     child: const Text('Back'),
                   ),
                 ),
@@ -106,6 +114,11 @@ class _TypeStepState extends State<TypeStep> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: _canProceed ? widget.onNext : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: ref.watch(accentColorProvider),
+                      foregroundColor: Colors.white,
+                      disabledBackgroundColor: Colors.grey.shade300,
+                    ),
                     child: const Text('Next'),
                   ),
                 ),

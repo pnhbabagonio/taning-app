@@ -1,10 +1,12 @@
 // ignore_for_file: non_const_argument_for_const_parameter
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:taning/features/tanings/domain/entities/taning.dart';
 import 'package:taning/features/tanings/presentation/view_models/create_view_model.dart';
+import 'package:taning/features/settings/presentation/providers/settings_providers.dart';
 
-class CustomizeStep extends StatefulWidget {
+class CustomizeStep extends ConsumerStatefulWidget {
   final CreateViewModel viewModel;
   final VoidCallback onNext;
   final VoidCallback onBack;
@@ -17,10 +19,10 @@ class CustomizeStep extends StatefulWidget {
   });
 
   @override
-  State<CustomizeStep> createState() => _CustomizeStepState();
+  ConsumerState<CustomizeStep> createState() => _CustomizeStepState();
 }
 
-class _CustomizeStepState extends State<CustomizeStep> {
+class _CustomizeStepState extends ConsumerState<CustomizeStep> {
   final _scrollController = ScrollController();
 
   @override
@@ -161,6 +163,12 @@ class _CustomizeStepState extends State<CustomizeStep> {
                 Expanded(
                   child: OutlinedButton(
                     onPressed: widget.onBack,
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: ref.watch(accentColorProvider),
+                      side: BorderSide(
+                        color: ref.watch(accentColorProvider),
+                      ),
+                    ),
                     child: const Text('Back'),
                   ),
                 ),
@@ -168,6 +176,11 @@ class _CustomizeStepState extends State<CustomizeStep> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: widget.onNext,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: ref.watch(accentColorProvider),
+                      foregroundColor: Colors.white,
+                      disabledBackgroundColor: Colors.grey.shade300,
+                    ),
                     child: const Text('Preview'),
                   ),
                 ),
