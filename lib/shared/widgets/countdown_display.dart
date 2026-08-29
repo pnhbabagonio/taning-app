@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:taning/features/settings/presentation/providers/settings_providers.dart';
 import 'package:taning/features/tanings/domain/entities/taning.dart';
 
 /// A widget that displays a countdown duration in various styles.
-class CountdownDisplay extends StatelessWidget {
+class CountdownDisplay extends ConsumerWidget {
   final Duration duration;
   final CountdownStyle style;
-  final Color? color;
+  final Color? taningColor; // Renamed from 'color' to be clear
   final bool isOverdue;
   final bool isFinished;
 
@@ -13,13 +15,16 @@ class CountdownDisplay extends StatelessWidget {
     super.key,
     required this.duration,
     this.style = CountdownStyle.detailed,
-    this.color,
+    this.taningColor,
     this.isOverdue = false,
     this.isFinished = false,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Get the global accent color from settings
+    final accentColor = ref.watch(accentColorProvider);
+    
     if (isFinished) {
       return const Text(
         '✅ Done',
@@ -52,26 +57,22 @@ class CountdownDisplay extends StatelessWidget {
     }
 
     final parts = _getDisplayParts(duration, style);
-    final textColor = color ?? Theme.of(context).textTheme.bodyLarge?.color;
 
     switch (style) {
       case CountdownStyle.simple:
-        return _buildSimpleDisplay(parts, textColor);
+        return _buildSimpleDisplay(parts, accentColor);
       case CountdownStyle.detailed:
-        return _buildDetailedDisplay(parts, textColor);
+        return _buildDetailedDisplay(parts, accentColor);
       case CountdownStyle.full:
-        return _buildFullDisplay(parts, textColor);
+        return _buildFullDisplay(parts, accentColor);
       case CountdownStyle.progress:
-        // Not used here; handled separately
         return const SizedBox.shrink();
       case CountdownStyle.calendar:
-        // Not used here; handled separately
         return const SizedBox.shrink();
     }
   }
 
-  Widget _buildSimpleDisplay(List<_DisplayPart> parts, Color? color) {
-    // Show the largest unit
+  Widget _buildSimpleDisplay(List<_DisplayPart> parts, Color accentColor) {
     final part = parts.firstWhere(
       (p) => p.value > 0,
       orElse: () => parts.last,
@@ -84,15 +85,15 @@ class CountdownDisplay extends StatelessWidget {
           style: TextStyle(
             fontSize: 32,
             fontWeight: FontWeight.w700,
-            color: color,
+            color: accentColor, // Use global accent color
             height: 1.0,
           ),
         ),
         Text(
           part.unit,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
-            color: Colors.grey,
+            color: accentColor.withValues(alpha: 0.7), // Subtle accent
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -100,8 +101,7 @@ class CountdownDisplay extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailedDisplay(List<_DisplayPart> parts, Color? color) {
-    // Show days, hours, minutes in a single line (or as appropriate)
+  Widget _buildDetailedDisplay(List<_DisplayPart> parts, Color accentColor) {
     final filtered = parts.where((p) => p.value > 0).toList();
     if (filtered.isEmpty) {
       return Text(
@@ -109,7 +109,7 @@ class CountdownDisplay extends StatelessWidget {
         style: TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.w700,
-          color: color,
+          color: accentColor,
         ),
       );
     }
@@ -119,13 +119,12 @@ class CountdownDisplay extends StatelessWidget {
       style: TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.w700,
-        color: color,
+        color: accentColor,
       ),
     );
   }
 
-  Widget _buildFullDisplay(List<_DisplayPart> parts, Color? color) {
-    // Show each unit on its own line (or a column)
+  Widget _buildFullDisplay(List<_DisplayPart> parts, Color accentColor) {
     final filtered = parts.where((p) => p.value > 0).toList();
     if (filtered.isEmpty) {
       return Text(
@@ -133,19 +132,20 @@ class CountdownDisplay extends StatelessWidget {
         style: TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.w700,
-          color: color,
+          color: accentColor,
         ),
       );
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: filtered.map((p) {
+        final isPrimary = p.unit == 'days';
         return Text(
           '${p.value} ${p.unit}',
           style: TextStyle(
-            fontSize: p.unit == 'days' ? 28 : 18,
-            fontWeight: p.unit == 'days' ? FontWeight.w700 : FontWeight.w500,
-            color: color,
+            fontSize: isPrimary ? 28 : 18,
+            fontWeight: isPrimary ? FontWeight.w700 : FontWeight.w500,
+            color: isPrimary ? accentColor : accentColor.withValues(alpha: 0.7),
             height: 1.2,
           ),
         );

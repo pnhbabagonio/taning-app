@@ -8,6 +8,8 @@ import 'package:taning/features/tanings/domain/entities/countdown_state.dart';
 import 'package:taning/features/tanings/domain/entities/taning.dart';
 import 'package:taning/features/tanings/presentation/providers/taning_providers.dart';
 import 'package:taning/shared/widgets/countdown_display.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:taning/features/settings/presentation/providers/settings_providers.dart';
 
 class TaningCard extends ConsumerStatefulWidget {
   final Taning taning;
@@ -151,7 +153,8 @@ enum TaningCardVariant {
 
 // MARK: - Standard Card
 
-class _StandardCard extends StatelessWidget {
+// Update _StandardCard - make it a ConsumerWidget
+class _StandardCard extends ConsumerWidget {
   final Taning taning;
   final CountdownState state;
   final Color color;
@@ -165,8 +168,9 @@ class _StandardCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isFinished = state.isFinished || state.isOverdue;
+    final accentColor = ref.watch(accentColorProvider);
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -188,9 +192,10 @@ class _StandardCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   taning.title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
+                    color: Theme.of(context).textTheme.bodyLarge?.color,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -200,8 +205,7 @@ class _StandardCard extends StatelessWidget {
                 const Icon(Icons.push_pin, size: 16, color: Colors.grey),
               if (isFinished)
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: state.isOverdue
                         ? Colors.red.shade100
@@ -229,11 +233,17 @@ class _StandardCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Expanded(
-                child: _buildCountdownDisplay(),
+                child: CountdownDisplay(
+                  duration: state.remainingDuration ?? Duration.zero,
+                  style: taning.countdownStyle,
+                  // taningColor is now optional, accentColor will be used
+                  isOverdue: state.isOverdue,
+                  isFinished: state.isFinished || state.status == CountdownStatus.ended,
+                ),
               ),
               if (state.progressPercentage != null &&
                   state.progressPercentage! > 0)
-                _buildProgressIndicator(),
+                _buildProgressIndicator(accentColor),
             ],
           ),
 
@@ -259,7 +269,7 @@ class _StandardCard extends StatelessWidget {
                     'Day ${state.currentDay} of ${state.totalDays}',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey.shade600,
+                      color: accentColor.withValues(alpha: 0.7),
                     ),
                   ),
               ],
@@ -269,18 +279,7 @@ class _StandardCard extends StatelessWidget {
     );
   }
 
-  Widget _buildCountdownDisplay() {
-    final duration = state.remainingDuration ?? Duration.zero;
-    return CountdownDisplay(
-      duration: duration,
-      style: taning.countdownStyle,
-      color: color,
-      isOverdue: state.isOverdue,
-      isFinished: state.isFinished || state.status == CountdownStatus.ended,
-    );
-  }
-
-  Widget _buildProgressIndicator() {
+  Widget _buildProgressIndicator(Color accentColor) {
     final progress = state.progressPercentage ?? 0;
     return SizedBox(
       width: 40,
@@ -289,15 +288,14 @@ class _StandardCard extends StatelessWidget {
         value: progress,
         strokeWidth: 3,
         backgroundColor: Colors.grey.shade200,
-        valueColor: AlwaysStoppedAnimation<Color>(color),
+        valueColor: AlwaysStoppedAnimation<Color>(accentColor),
       ),
     );
   }
 }
 
-// MARK: - Compact Card
-
-class _CompactCard extends StatelessWidget {
+// Similarly update _CompactCard
+class _CompactCard extends ConsumerWidget {
   final Taning taning;
   final CountdownState state;
   final Color color;
@@ -311,7 +309,9 @@ class _CompactCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final accentColor = ref.watch(accentColorProvider);
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
@@ -328,9 +328,10 @@ class _CompactCard extends StatelessWidget {
           Expanded(
             child: Text(
               taning.title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
+                color: Theme.of(context).textTheme.bodyLarge?.color,
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -358,7 +359,7 @@ class _CompactCard extends StatelessWidget {
             CountdownDisplay(
               duration: state.remainingDuration ?? Duration.zero,
               style: CountdownStyle.simple,
-              color: color,
+              // No taningColor needed, uses accentColor
             ),
           const SizedBox(width: 8),
           if (state.progressPercentage != null)
@@ -369,7 +370,7 @@ class _CompactCard extends StatelessWidget {
                 value: state.progressPercentage,
                 strokeWidth: 2,
                 backgroundColor: Colors.grey.shade200,
-                valueColor: AlwaysStoppedAnimation<Color>(color),
+                valueColor: AlwaysStoppedAnimation<Color>(accentColor),
               ),
             ),
         ],
@@ -378,9 +379,8 @@ class _CompactCard extends StatelessWidget {
   }
 }
 
-// MARK: - Focus Card
-
-class _FocusCard extends StatelessWidget {
+// Update _FocusCard
+class _FocusCard extends ConsumerWidget {
   final Taning taning;
   final CountdownState state;
   final Color color;
@@ -394,7 +394,9 @@ class _FocusCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final accentColor = ref.watch(accentColorProvider);
+
     return Container(
       padding: const EdgeInsets.all(20),
       child: FittedBox(
@@ -415,9 +417,10 @@ class _FocusCard extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               taning.title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w600,
+                color: Theme.of(context).textTheme.bodyLarge?.color,
               ),
               textAlign: TextAlign.center,
               maxLines: 2,
@@ -427,7 +430,6 @@ class _FocusCard extends StatelessWidget {
             CountdownDisplay(
               duration: state.remainingDuration ?? Duration.zero,
               style: CountdownStyle.full,
-              color: color,
               isOverdue: state.isOverdue,
               isFinished:
                   state.isFinished || state.status == CountdownStatus.ended,
@@ -447,7 +449,7 @@ class _FocusCard extends StatelessWidget {
               LinearProgressIndicator(
                 value: state.progressPercentage,
                 backgroundColor: Colors.grey.shade200,
-                valueColor: AlwaysStoppedAnimation<Color>(color),
+                valueColor: AlwaysStoppedAnimation<Color>(accentColor),
                 minHeight: 4,
               ),
               const SizedBox(height: 8),
@@ -466,9 +468,8 @@ class _FocusCard extends StatelessWidget {
   }
 }
 
-// MARK: - Mini Card (for grids)
-
-class _MiniCard extends StatelessWidget {
+// Mini Card remains similar
+class _MiniCard extends ConsumerWidget {
   final Taning taning;
   final CountdownState state;
   final Color color;
@@ -482,7 +483,8 @@ class _MiniCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -511,7 +513,6 @@ class _MiniCard extends StatelessWidget {
             CountdownDisplay(
               duration: state.remainingDuration ?? Duration.zero,
               style: CountdownStyle.simple,
-              color: color,
             ),
           if (state.isFinished || state.status == CountdownStatus.ended)
             Text(
