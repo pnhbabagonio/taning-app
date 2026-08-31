@@ -10,6 +10,8 @@ import 'package:taning/features/tanings/presentation/providers/taning_providers.
 import 'package:taning/shared/widgets/countdown_display.dart';
 import 'package:taning/features/settings/presentation/providers/settings_providers.dart';
 
+const double _kCardHeight = 180.0;
+
 class TaningCard extends ConsumerStatefulWidget {
   final Taning taning;
   final VoidCallback? onTap;
@@ -97,9 +99,12 @@ class _TaningCardState extends ConsumerState<TaningCard> {
     return GestureDetector(
       onTap: widget.onTap,
       onLongPress: widget.onLongPress,
-      child: Card(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: _buildCardContent(icon),
+      child: SizedBox(
+        height: _kCardHeight, // Fixed height for all cards
+        child: Card(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: _buildCardContent(icon),
+        ),
       ),
     );
   }
@@ -142,8 +147,6 @@ enum TaningCardVariant {
 }
 
 // MARK: - Standard Card
-
-// Update _StandardCard - make it a ConsumerWidget
 class _StandardCard extends ConsumerWidget {
   final Taning taning;
   final CountdownState state;
@@ -161,123 +164,132 @@ class _StandardCard extends ConsumerWidget {
     final accentColor = ref.watch(accentColorProvider);
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      height: _kCardHeight - 16, // Subtract padding
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Header
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: accentColor.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(icon, color: accentColor, size: 22),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  taning.title,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: Theme.of(context).textTheme.bodyLarge?.color,
-                    letterSpacing: -0.2,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              if (taning.isPinned)
-                Icon(Icons.push_pin, size: 16, color: accentColor.withValues(alpha: 0.6)),
-              if (isFinished)
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: state.isOverdue
-                        ? Colors.red.withValues(alpha: 0.1)
-                        : Colors.green.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    state.isOverdue ? 'Overdue' : 'Done',
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      color: state.isOverdue
-                          ? Colors.red.shade700
-                          : Colors.green.shade700,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-
-          const SizedBox(height: 16),
-
-          // Countdown Display
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Expanded(
-                child: CountdownDisplay(
-                  duration: state.remainingDuration ?? Duration.zero,
-                  style: taning.countdownStyle,
-                  isOverdue: state.isOverdue,
-                  isFinished: state.isFinished || state.status == CountdownStatus.ended,
-                ),
-              ),
-              if (state.progressPercentage != null &&
-                  state.progressPercentage! > 0)
-                _buildProgressIndicator(accentColor),
-            ],
-          ),
-
-          const SizedBox(height: 12),
-
-          // Target Date
-          if (state.targetDate != null)
-            Row(
+          // Header - Fixed height
+          SizedBox(
+            height: 32,
+            child: Row(
               children: [
-                Icon(Icons.calendar_today, size: 14, color: accentColor.withValues(alpha: 0.5)),
-                const SizedBox(width: 6),
-                Text(
-                  CountdownFormatter.formatDate(state.targetDate!),
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Theme.of(context).textTheme.bodySmall?.color?.withValues(alpha: 0.6),
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: accentColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(icon, color: accentColor, size: 18),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    taning.title,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
+                      letterSpacing: -0.2,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                const Spacer(),
-                if (taning.type == TaningType.duration &&
-                    state.currentDay != null)
-                  Text(
-                    'Day ${state.currentDay} of ${state.totalDays}',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: accentColor.withValues(alpha: 0.7),
+                if (taning.isPinned)
+                  Icon(Icons.push_pin,
+                      size: 14, color: accentColor.withValues(alpha: 0.6)),
+                if (isFinished)
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: state.isOverdue
+                          ? Colors.red.withValues(alpha: 0.1)
+                          : Colors.green.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      state.isOverdue ? 'Overdue' : 'Done',
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        color: state.isOverdue
+                            ? Colors.red.shade700
+                            : Colors.green.shade700,
+                      ),
                     ),
                   ),
               ],
             ),
-        ],
-      ),
-    );
-  }
+          ),
 
-  Widget _buildProgressIndicator(Color accentColor) {
-    final progress = state.progressPercentage ?? 0;
-    return SizedBox(
-      width: 40,
-      height: 40,
-      child: CircularProgressIndicator(
-        value: progress,
-        strokeWidth: 3,
-        backgroundColor: Colors.grey.shade200,
-        valueColor: AlwaysStoppedAnimation<Color>(accentColor),
+          // Countdown Display - Flexible
+          Expanded(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: CountdownDisplay(
+                    duration: state.remainingDuration ?? Duration.zero,
+                    style: taning.countdownStyle,
+                    isOverdue: state.isOverdue,
+                    isFinished: state.isFinished ||
+                        state.status == CountdownStatus.ended,
+                  ),
+                ),
+                if (state.progressPercentage != null &&
+                    state.progressPercentage! > 0)
+                  SizedBox(
+                    width: 36,
+                    height: 36,
+                    child: CircularProgressIndicator(
+                      value: state.progressPercentage,
+                      strokeWidth: 3,
+                      backgroundColor: accentColor.withValues(alpha: 0.1),
+                      valueColor: AlwaysStoppedAnimation<Color>(accentColor),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+
+          // Footer - Fixed height
+          if (state.targetDate != null)
+            SizedBox(
+              height: 20,
+              child: Row(
+                children: [
+                  Icon(Icons.calendar_today,
+                      size: 12, color: accentColor.withValues(alpha: 0.5)),
+                  const SizedBox(width: 4),
+                  Text(
+                    CountdownFormatter.formatDate(state.targetDate!),
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Theme.of(context)
+                          .textTheme
+                          .bodySmall
+                          ?.color
+                          ?.withValues(alpha: 0.6),
+                    ),
+                  ),
+                  const Spacer(),
+                  if (taning.type == TaningType.duration &&
+                      state.currentDay != null)
+                    Text(
+                      'Day ${state.currentDay} of ${state.totalDays}',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: accentColor.withValues(alpha: 0.7),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -439,7 +451,11 @@ class _FocusCard extends ConsumerWidget {
                 CountdownFormatter.formatDate(state.targetDate!),
                 style: TextStyle(
                   fontSize: 14,
-                  color: Theme.of(context).textTheme.bodySmall?.color?.withValues(alpha: 0.6),
+                  color: Theme.of(context)
+                      .textTheme
+                      .bodySmall
+                      ?.color
+                      ?.withValues(alpha: 0.6),
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -487,7 +503,7 @@ class _MiniCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final accentColor = ref.watch(accentColorProvider);
-    
+
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(

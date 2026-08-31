@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:taning/features/settings/presentation/providers/settings_providers.dart';
 import 'package:taning/features/tanings/domain/entities/taning.dart';
 import 'package:taning/features/tanings/presentation/providers/taning_providers.dart';
+import 'package:taning/core/services/logger.dart';
 
 class EditScreen extends ConsumerStatefulWidget {
   final Taning taning;
@@ -579,13 +580,15 @@ class _EditScreenState extends ConsumerState<EditScreen> {
     // No need to update separately
   }
 
+  // In the _saveChanges method, ensure all fields are passed correctly:
+
   void _saveChanges() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isSaving = true);
 
     try {
-      // Build the updated Taning
+      // Build the updated Taning with all changes
       final updatedTaning = widget.taning.copyWith(
         title: _titleController.text.trim(),
         description: _descriptionController.text.trim().isEmpty
@@ -596,14 +599,16 @@ class _EditScreenState extends ConsumerState<EditScreen> {
         endDate: _selectedDate,
         isAllDay: _isAllDay,
         icon: _selectedIcon,
-        color: _selectedColor,
+        color: _selectedColor, // This should work with Freezed
         theme: _selectedTheme,
         countdownStyle: _selectedStyle,
         notificationSettings: _notificationSettings,
         recurrence: _recurrencePattern,
-        updatedAt: DateTime.now(),
+        updatedAt: DateTime.now(), // Update this every time
         timezone: widget.taning.timezone ?? 'local',
       );
+
+      LoggerService.info('Saving Taning with color: ${_selectedColor.value}');
 
       await ref.read(taningRepositoryProvider).save(updatedTaning);
 
@@ -617,7 +622,7 @@ class _EditScreenState extends ConsumerState<EditScreen> {
         );
       }
     } catch (e) {
-      debugPrint('Error updating Taning: $e');
+      LoggerService.error('Error updating Taning: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

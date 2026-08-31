@@ -1,6 +1,7 @@
 import 'package:taning/features/tanings/domain/entities/taning.dart';
 import 'package:taning/features/tanings/domain/repositories/taning_repository.dart';
 import 'package:taning/features/tanings/data/datasources/local_datasource.dart';
+import 'package:taning/core/services/logger.dart';
 
 class TaningRepositoryImpl implements TaningRepository {
   final LocalTaningDataSource localDataSource;
@@ -35,19 +36,31 @@ class TaningRepositoryImpl implements TaningRepository {
   
   @override
   Future<Taning> save(Taning taning) async {
-    // Check if it's new or existing
-    final existing = await localDataSource.getTaningById(taning.id);
-    if (existing != null) {
-      // Update with new values
-      final updated = taning.copyWith(
-        updatedAt: DateTime.now(),
-      );
-      await localDataSource.updateTaning(updated);
-      return updated;
-    } else {
-      // Insert new
-      await localDataSource.insertTaning(taning);
-      return taning;
+    try {
+      // Check if it's new or existing
+      final existing = await localDataSource.getTaningById(taning.id);
+      if (existing != null) {
+        // Update with new values - preserve id and createdAt
+        final updated = taning.copyWith(
+          updatedAt: DateTime.now(),
+          // Preserve these from existing
+          id: existing.id,
+          createdAt: existing.createdAt,
+          completedAt: existing.completedAt,
+          lastNotifiedAt: existing.lastNotifiedAt,
+        );
+        LoggerService.info('Updating Taning: ${updated.id} - ${updated.title}');
+        await localDataSource.updateTaning(updated);
+        return updated;
+      } else {
+        // Insert new
+        LoggerService.info('Creating new Taning: ${taning.id} - ${taning.title}');
+        await localDataSource.insertTaning(taning);
+        return taning;
+      }
+    } catch (e) {
+      LoggerService.error('Error saving Taning: $e');
+      rethrow;
     }
   }
   

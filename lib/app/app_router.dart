@@ -7,6 +7,7 @@ import 'package:taning/features/tanings/presentation/screens/detail_screen.dart'
 import 'package:taning/features/tanings/presentation/screens/edit_screen.dart';
 import 'package:taning/features/settings/presentation/screens/settings_screen.dart';
 import 'package:taning/features/widgets/presentation/screens/widget_config_screen.dart';
+import 'package:taning/features/tanings/presentation/screens/calendar_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -51,6 +52,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/widget-config',
         name: 'widget-config',
         builder: (context, state) => const WidgetConfigScreen(),
+      ),
+      GoRoute(
+        path: '/calendar',
+        name: 'calendar',
+        builder: (context, state) => const CalendarScreen(),
       ),
     ],
     redirect: (context, state) {

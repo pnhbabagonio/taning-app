@@ -36,7 +36,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final taningsAsync = ref.watch(activeTaningsProvider);
-    
+
     return Scaffold(
       appBar: _buildAppBar(),
       body: taningsAsync.when(
@@ -98,8 +98,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         // View mode toggle
         IconButton(
           icon: Icon(
-            _viewMode == TaningListVariant.list 
-                ? Icons.view_list 
+            _viewMode == TaningListVariant.list
+                ? Icons.view_list
                 : _viewMode == TaningListVariant.grid
                     ? Icons.grid_view
                     : Icons.filter_center_focus,
@@ -131,6 +131,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             );
           },
           tooltip: 'Widget Settings',
+        ),
+        IconButton(
+          icon: const Icon(Icons.calendar_month_outlined),
+          onPressed: () {
+            context.push('/calendar');
+          },
+          tooltip: 'Calendar',
         ),
       ],
     );
