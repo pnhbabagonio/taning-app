@@ -263,10 +263,10 @@ class _DetailContent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-  final color = taning.color.toColor();
-  final iconCode = String.fromCharCode(taning.icon.codePoint);
-  final iconFamily = taning.icon.family ?? 'MaterialIcons';
-  final accentColor = ref.watch(accentColorProvider);
+    final color = taning.color.toColor();
+    final iconCode = String.fromCharCode(taning.icon.codePoint);
+    final iconFamily = taning.icon.family ?? 'MaterialIcons';
+    final accentColor = ref.watch(accentColorProvider);
 
     return Scaffold(
       appBar: _buildAppBar(context, color, accentColor),
@@ -274,7 +274,7 @@ class _DetailContent extends ConsumerWidget {
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [
-            _buildCountdownDisplay(color, icon, accentColor),
+            _buildCountdownDisplay(color, iconCode, iconFamily, accentColor),
             const SizedBox(height: 32),
             _buildProgressSection(color),
             const SizedBox(height: 32),
@@ -395,7 +395,8 @@ class _DetailContent extends ConsumerWidget {
 
   Widget _buildCountdownDisplay(
     Color color,
-    IconData icon,
+    String iconCode,
+    String iconFamily,
     Color accentColor,
   ) {
     final isFinished = state.isFinished || state.isOverdue;
@@ -423,14 +424,15 @@ class _DetailContent extends ConsumerWidget {
               color: color.withValues(alpha: 0.15),
               shape: BoxShape.circle,
             ),
-child: Text(
-  iconCode,
-  style: TextStyle(
-    fontFamily: iconFamily,
-    fontSize: 40,
-    color: accentColor,
-  ),
-),
+            child: Text(
+              iconCode,
+              style: TextStyle(
+                fontFamily: iconFamily,
+                fontSize: 40,
+                color: accentColor,
+              ),
+            ),
+          ),
           const SizedBox(height: 16),
           Text(
             taning.title,
@@ -839,10 +841,9 @@ class _FullscreenCountdownState extends ConsumerState<_FullscreenCountdown>
   @override
   Widget build(BuildContext context) {
     final color = widget.taning.color.toColor();
-    final icon = IconData(
-      widget.taning.icon.codePoint,
-      fontFamily: widget.taning.icon.family ?? 'MaterialIcons',
-    );
+    // FIX: Use Text with font instead of IconData for fullscreen too
+    final iconCode = String.fromCharCode(widget.taning.icon.codePoint);
+    final iconFamily = widget.taning.icon.family ?? 'MaterialIcons';
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -874,14 +875,21 @@ class _FullscreenCountdownState extends ConsumerState<_FullscreenCountdown>
                 ),
               ),
               const Spacer(),
-              // Icon
+              // Icon - using Text with MaterialIcons font
               Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(icon, color: color, size: 48),
+                child: Text(
+                  iconCode,
+                  style: TextStyle(
+                    fontFamily: iconFamily,
+                    fontSize: 48,
+                    color: color,
+                  ),
+                ),
               ),
               const SizedBox(height: 24),
               Text(
