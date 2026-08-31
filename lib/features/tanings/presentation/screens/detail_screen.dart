@@ -263,12 +263,10 @@ class _DetailContent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final color = taning.color.toColor();
-    final icon = IconData(
-      taning.icon.codePoint,
-      fontFamily: taning.icon.family ?? 'MaterialIcons',
-    );
-    final accentColor = ref.watch(accentColorProvider);
+  final color = taning.color.toColor();
+  final iconCode = String.fromCharCode(taning.icon.codePoint);
+  final iconFamily = taning.icon.family ?? 'MaterialIcons';
+  final accentColor = ref.watch(accentColorProvider);
 
     return Scaffold(
       appBar: _buildAppBar(context, color, accentColor),
@@ -425,8 +423,14 @@ class _DetailContent extends ConsumerWidget {
               color: color.withValues(alpha: 0.15),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: accentColor, size: 40),
-          ),
+child: Text(
+  iconCode,
+  style: TextStyle(
+    fontFamily: iconFamily,
+    fontSize: 40,
+    color: accentColor,
+  ),
+),
           const SizedBox(height: 16),
           Text(
             taning.title,

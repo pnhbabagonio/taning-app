@@ -91,49 +91,52 @@ class _TaningCardState extends ConsumerState<TaningCard> {
 
   @override
   Widget build(BuildContext context) {
-    final icon = IconData(
-      widget.taning.icon.codePoint,
-      fontFamily: widget.taning.icon.family ?? 'MaterialIcons',
-    );
+    // FIX: Use Text with font instead of IconData
+    final iconCode = String.fromCharCode(widget.taning.icon.codePoint);
+    final iconFamily = widget.taning.icon.family ?? 'MaterialIcons';
 
     return GestureDetector(
       onTap: widget.onTap,
       onLongPress: widget.onLongPress,
       child: SizedBox(
-        height: _kCardHeight, // Fixed height for all cards
+        height: _kCardHeight,
         child: Card(
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: _buildCardContent(icon),
+          child: _buildCardContent(iconCode, iconFamily),
         ),
       ),
     );
   }
 
-  Widget _buildCardContent(IconData icon) {
+  Widget _buildCardContent(String iconCode, String iconFamily) {
     switch (widget.variant) {
       case TaningCardVariant.standard:
         return _StandardCard(
           taning: widget.taning,
           state: _currentState,
-          icon: icon,
+          iconCode: iconCode,
+          iconFamily: iconFamily,
         );
       case TaningCardVariant.compact:
         return _CompactCard(
           taning: widget.taning,
           state: _currentState,
-          icon: icon,
+          iconCode: iconCode,
+          iconFamily: iconFamily,
         );
       case TaningCardVariant.focus:
         return _FocusCard(
           taning: widget.taning,
           state: _currentState,
-          icon: icon,
+          iconCode: iconCode,
+          iconFamily: iconFamily,
         );
       case TaningCardVariant.mini:
         return _MiniCard(
           taning: widget.taning,
           state: _currentState,
-          icon: icon,
+          iconCode: iconCode,
+          iconFamily: iconFamily,
         );
     }
   }
@@ -150,12 +153,14 @@ enum TaningCardVariant {
 class _StandardCard extends ConsumerWidget {
   final Taning taning;
   final CountdownState state;
-  final IconData icon;
+  final String iconCode;
+  final String iconFamily;
 
   const _StandardCard({
     required this.taning,
     required this.state,
-    required this.icon,
+    required this.iconCode,
+    required this.iconFamily,
   });
 
   @override
@@ -164,13 +169,13 @@ class _StandardCard extends ConsumerWidget {
     final accentColor = ref.watch(accentColorProvider);
 
     return Container(
-      height: _kCardHeight - 16, // Subtract padding
+      height: _kCardHeight - 16,
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Header - Fixed height
+          // Header
           SizedBox(
             height: 32,
             child: Row(
@@ -181,7 +186,14 @@ class _StandardCard extends ConsumerWidget {
                     color: accentColor.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(icon, color: accentColor, size: 18),
+                  child: Text(
+                    iconCode,
+                    style: TextStyle(
+                      fontFamily: iconFamily,
+                      fontSize: 18,
+                      color: accentColor,
+                    ),
+                  ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
@@ -225,7 +237,7 @@ class _StandardCard extends ConsumerWidget {
             ),
           ),
 
-          // Countdown Display - Flexible
+          // Countdown Display
           Expanded(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -255,7 +267,7 @@ class _StandardCard extends ConsumerWidget {
             ),
           ),
 
-          // Footer - Fixed height
+          // Footer
           if (state.targetDate != null)
             SizedBox(
               height: 20,
@@ -295,16 +307,18 @@ class _StandardCard extends ConsumerWidget {
   }
 }
 
-// Similarly update _CompactCard
+// MARK: - Compact Card
 class _CompactCard extends ConsumerWidget {
   final Taning taning;
   final CountdownState state;
-  final IconData icon;
+  final String iconCode;
+  final String iconFamily;
 
   const _CompactCard({
     required this.taning,
     required this.state,
-    required this.icon,
+    required this.iconCode,
+    required this.iconFamily,
   });
 
   @override
@@ -321,7 +335,14 @@ class _CompactCard extends ConsumerWidget {
               color: accentColor.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(icon, color: accentColor, size: 18),
+            child: Text(
+              iconCode,
+              style: TextStyle(
+                fontFamily: iconFamily,
+                fontSize: 18,
+                color: accentColor,
+              ),
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -391,16 +412,18 @@ class _CompactCard extends ConsumerWidget {
   }
 }
 
-// Update _FocusCard
+// MARK: - Focus Card
 class _FocusCard extends ConsumerWidget {
   final Taning taning;
   final CountdownState state;
-  final IconData icon;
+  final String iconCode;
+  final String iconFamily;
 
   const _FocusCard({
     required this.taning,
     required this.state,
-    required this.icon,
+    required this.iconCode,
+    required this.iconFamily,
   });
 
   @override
@@ -422,7 +445,14 @@ class _FocusCard extends ConsumerWidget {
                 color: accentColor.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, color: accentColor, size: 40),
+              child: Text(
+                iconCode,
+                style: TextStyle(
+                  fontFamily: iconFamily,
+                  fontSize: 40,
+                  color: accentColor,
+                ),
+              ),
             ),
             const SizedBox(height: 20),
             Text(
@@ -488,16 +518,18 @@ class _FocusCard extends ConsumerWidget {
   }
 }
 
-// Mini Card remains similar
+// MARK: - Mini Card
 class _MiniCard extends ConsumerWidget {
   final Taning taning;
   final CountdownState state;
-  final IconData icon;
+  final String iconCode;
+  final String iconFamily;
 
   const _MiniCard({
     required this.taning,
     required this.state,
-    required this.icon,
+    required this.iconCode,
+    required this.iconFamily,
   });
 
   @override
@@ -517,7 +549,14 @@ class _MiniCard extends ConsumerWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, color: accentColor, size: 22),
+          Text(
+            iconCode,
+            style: TextStyle(
+              fontFamily: iconFamily,
+              fontSize: 22,
+              color: accentColor,
+            ),
+          ),
           const SizedBox(height: 6),
           Text(
             taning.title,
