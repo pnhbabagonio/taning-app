@@ -8,7 +8,7 @@ import 'package:taning/core/services/logger.dart';
 class WidgetBridge {
   static const String _prefKey = 'widget_data';
   static const String _iosGroupKey = 'widget_data_ios';
-  
+
   static Future<void> updateWidgetData(Taning taning) async {
     try {
       const engine = CountdownEngine();
@@ -36,7 +36,7 @@ class WidgetBridge {
       // Save to shared preferences
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_prefKey, jsonEncode(data));
-      
+
       // iOS app group shared preferences
       try {
         // For iOS app group
@@ -49,7 +49,7 @@ class WidgetBridge {
       // Trigger widget updates
       await _updateAndroidWidget();
       await _updateIosWidget();
-      
+
       LoggerService.info('Widget data updated for: ${taning.title}');
     } catch (e) {
       LoggerService.error('Failed to update widget data: $e');
@@ -58,7 +58,6 @@ class WidgetBridge {
 
   static Future<void> _updateAndroidWidget() async {
     try {
-      // Method channel for Android widget update
       const platform = MethodChannel('com.taning.app/widget');
       await platform.invokeMethod('updateWidget');
     } catch (e) {
@@ -79,32 +78,31 @@ class WidgetBridge {
   static Future<void> updateWidgetsWithAllTanings(List<Taning> tanings) async {
     // Find the best Taning to show on widget
     Taning? selected;
-    
+
     // Prefer pinned or soonest active Taning
     for (final taning in tanings) {
       if (taning.isArchived || taning.isCompleted) continue;
-      
+
       if (taning.isPinned) {
         selected = taning;
         break;
       }
     }
-    
+
     if (selected == null && tanings.isNotEmpty) {
       // Choose the one with soonest end date
-      selected = tanings
-          .where((t) => !t.isArchived && !t.isCompleted)
-          .fold<Taning?>(
-            null,
-            (prev, current) {
-              if (prev == null) return current;
-              if (current.endDate == null) return prev;
-              if (prev.endDate == null) return current;
-              return current.endDate!.isBefore(prev.endDate!) ? current : prev;
-            },
-          );
+      selected =
+          tanings.where((t) => !t.isArchived && !t.isCompleted).fold<Taning?>(
+        null,
+        (prev, current) {
+          if (prev == null) return current;
+          if (current.endDate == null) return prev;
+          if (prev.endDate == null) return current;
+          return current.endDate!.isBefore(prev.endDate!) ? current : prev;
+        },
+      );
     }
-    
+
     if (selected != null) {
       await updateWidgetData(selected);
     }
@@ -114,11 +112,11 @@ class WidgetBridge {
 // Method Channel setup
 class WidgetPlugin {
   static const MethodChannel _channel = MethodChannel('com.taning.app/widget');
-  
+
   static Future<void> initialize() async {
     _channel.setMethodCallHandler(_handleMethodCall);
   }
-  
+
   static Future<dynamic> _handleMethodCall(MethodCall call) async {
     switch (call.method) {
       case 'getWidgetData':

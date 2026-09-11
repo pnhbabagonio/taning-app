@@ -31,6 +31,17 @@
         android:maxLines="1"
         android:ellipsize="end" />
 
+    <TextView
+        android:id="@+id/widget_subtext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="6h 12m"
+        android:textColor="#EDE9FE"
+        android:textSize="12sp"
+        android:maxLines="1"
+        android:ellipsize="end" />
+
     <ProgressBar
         android:id="@+id/widget_progress"
         style="?android:attr/progressBarStyleHorizontal"
