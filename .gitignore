@@ -43,3 +43,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+
+# Android Gradle distribution
+/android/gradle-8.14.1-all.zip
