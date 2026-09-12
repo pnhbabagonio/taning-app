@@ -20,7 +20,7 @@ subprojects {
     project.evaluationDependsOn(":app")
 }
 
-// Keep Kotlin stdlib aligned with the Kotlin Gradle plugin in this workspace.
+// Force Kotlin stdlib version to match compiler
 subprojects {
     configurations.all {
         resolutionStrategy {

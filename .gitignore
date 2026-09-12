@@ -45,5 +45,15 @@ app.*.map.json
 /android/app/release
 
 
-# Android Gradle distribution
-/android/gradle-8.14.1-all.zip
+# Gradle binaries (should never be committed)
+android/gradle-*.zip
+android/gradle-*.zip.*
+*.gradle.zip
+
+# Also common large files that shouldn't be committed
+*.apk
+*.aab
+*.ipa
+*.jar
+*.hprofandroid/gradle-*.zip
+android/gradle-*.zip.*

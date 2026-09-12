@@ -11,25 +11,25 @@
         android:id="@+id/widget_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:text="Taning"
         android:textColor="#FFFFFF"
         android:textSize="12sp"
-        android:textStyle="bold"
-        android:maxLines="1"
-        android:ellipsize="end" />
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/widget_countdown"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="546dp"
         android:layout_weight="1"
+        android:ellipsize="end"
         android:gravity="center"
+        android:maxLines="1"
         android:text="14d 6h"
         android:textColor="#FFFFFF"
         android:textSize="28sp"
-        android:textStyle="bold"
-        android:maxLines="1"
-        android:ellipsize="end" />
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/widget_subtext"
