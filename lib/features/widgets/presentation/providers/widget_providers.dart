@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:taning/plugins/widget_bridge.dart';
-import 'package:taning/features/tanings/domain/entities/taning.dart';
 import 'package:taning/features/tanings/presentation/providers/taning_providers.dart';
 
 final widgetBridgeProvider = Provider<WidgetBridge>((ref) {
@@ -13,42 +12,34 @@ final widgetUpdateProvider = FutureProvider<void>((ref) async {
   await WidgetBridge.updateWidgetsWithAllTanings(tanings);
 });
 
-final selectedWidgetTaningProvider = StateProvider<Taning?>((ref) {
-  return null;
-});
-
 final widgetConfigProvider = StateProvider<WidgetConfig>((ref) {
   return WidgetConfig.defaults();
 });
 
 class WidgetConfig {
-  final String taningId;
+  final bool showIcons;
+  final bool showDates;
   final bool showProgress;
-  final bool showIcon;
-  final int theme;
 
   const WidgetConfig({
-    required this.taningId,
+    this.showIcons = true,
+    this.showDates = true,
     this.showProgress = true,
-    this.showIcon = true,
-    this.theme = 0,
   });
 
   factory WidgetConfig.defaults() {
-    return const WidgetConfig(taningId: '');
+    return const WidgetConfig();
   }
 
   WidgetConfig copyWith({
-    String? taningId,
+    bool? showIcons,
+    bool? showDates,
     bool? showProgress,
-    bool? showIcon,
-    int? theme,
   }) {
     return WidgetConfig(
-      taningId: taningId ?? this.taningId,
+      showIcons: showIcons ?? this.showIcons,
+      showDates: showDates ?? this.showDates,
       showProgress: showProgress ?? this.showProgress,
-      showIcon: showIcon ?? this.showIcon,
-      theme: theme ?? this.theme,
     );
   }
 }

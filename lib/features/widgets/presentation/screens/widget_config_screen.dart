@@ -60,13 +60,9 @@ class _WidgetConfigScreenState extends ConsumerState<WidgetConfigScreen> {
     setState(() => _isSaving = true);
 
     try {
-      final config = ref.read(widgetConfigProvider);
-      if (config.taningId.isNotEmpty) {
-        final taning = await ref.read(taningProvider(config.taningId).future);
-        if (taning != null) {
-          await WidgetBridge.updateWidgetData(taning);
-        }
-      }
+      final repository = ref.read(taningRepositoryProvider);
+      final tanings = await repository.getAll();
+      await WidgetBridge.updateWidgetsWithAllTanings(tanings);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -104,11 +100,7 @@ class _EmptyWidgetConfig extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.widgets_outlined,
-            size: 64,
-            color: Colors.grey.shade400,
-          ),
+          Icon(Icons.widgets_outlined, size: 64, color: Colors.grey.shade400),
           const SizedBox(height: 16),
           const Text(
             'No Tanings available',
@@ -146,18 +138,16 @@ class _WidgetConfigContent extends StatefulWidget {
 }
 
 class _WidgetConfigContentState extends State<_WidgetConfigContent> {
-  late String _selectedId;
+  late bool _showIcons;
+  late bool _showDates;
   late bool _showProgress;
-  late bool _showIcon;
-  late int _theme;
 
   @override
   void initState() {
     super.initState();
-    _selectedId = widget.config.taningId;
+    _showIcons = widget.config.showIcons;
+    _showDates = widget.config.showDates;
     _showProgress = widget.config.showProgress;
-    _showIcon = widget.config.showIcon;
-    _theme = widget.config.theme;
   }
 
   @override
@@ -174,17 +164,14 @@ class _WidgetConfigContentState extends State<_WidgetConfigContent> {
               children: [
                 const Text(
                   'Widget Preview',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 12),
                 Container(
-                  height: 150,
+                  padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
-                    color: _getSelectedColor(),
+                    color: const Color(0xFF1A1A1A),
                   ),
                   child: _buildWidgetPreview(),
                 ),
@@ -194,82 +181,7 @@ class _WidgetConfigContentState extends State<_WidgetConfigContent> {
         ),
         const SizedBox(height: 16),
 
-        // Select Taning
-        Card(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Padding(
-                padding: EdgeInsets.all(16),
-                child: Text(
-                  'Select Taning',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              ...widget.tanings.map((taning) {
-                final isSelected = _selectedId == taning.id;
-                return ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: taning.color.toColor(),
-                    radius: 12,
-                    child: Text(
-                      String.fromCharCode(taning.icon.codePoint),
-                      style: const TextStyle(fontSize: 12),
-                    ),
-                  ),
-                  title: Text(taning.title),
-                  trailing: isSelected
-                      ? const Icon(Icons.check_circle, color: Colors.green)
-                      : null,
-                  onTap: () {
-                    setState(() {
-                      _selectedId = taning.id;
-                      _updateConfig();
-                    });
-                  },
-                );
-              }),
-            ],
-          ),
-        ),
-        const SizedBox(height: 16),
-
-        // Options
-        Card(
-          child: Column(
-            children: [
-              SwitchListTile(
-                title: const Text('Show Progress'),
-                subtitle: const Text('Display progress bar'),
-                value: _showProgress,
-                onChanged: (value) {
-                  setState(() {
-                    _showProgress = value;
-                    _updateConfig();
-                  });
-                },
-              ),
-              const Divider(height: 1),
-              SwitchListTile(
-                title: const Text('Show Icon'),
-                subtitle: const Text('Display Taning icon'),
-                value: _showIcon,
-                onChanged: (value) {
-                  setState(() {
-                    _showIcon = value;
-                    _updateConfig();
-                  });
-                },
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 16),
-
-        // Help text
+        // Info card
         Card(
           color: Colors.blue.shade50,
           child: Padding(
@@ -280,10 +192,11 @@ class _WidgetConfigContentState extends State<_WidgetConfigContent> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'Add the Taning widget to your home screen to see your countdown at a glance.',
+                    'The widget shows your top upcoming Tanings sorted by soonest. '
+                    'Small size shows 1, medium shows 4, large shows 6.',
                     style: TextStyle(
                       color: Colors.blue.shade700,
-                      fontSize: 14,
+                      fontSize: 13,
                     ),
                   ),
                 ),
@@ -291,77 +204,152 @@ class _WidgetConfigContentState extends State<_WidgetConfigContent> {
             ),
           ),
         ),
+        const SizedBox(height: 16),
+
+        // Options
+        Card(
+          child: Column(
+            children: [
+              SwitchListTile(
+                title: const Text('Show Icons'),
+                subtitle: const Text('Display Taning icons'),
+                value: _showIcons,
+                onChanged: (value) {
+                  setState(() {
+                    _showIcons = value;
+                    _updateConfig();
+                  });
+                },
+              ),
+              const Divider(height: 1),
+              SwitchListTile(
+                title: const Text('Show Dates'),
+                subtitle: const Text('Display target dates'),
+                value: _showDates,
+                onChanged: (value) {
+                  setState(() {
+                    _showDates = value;
+                    _updateConfig();
+                  });
+                },
+              ),
+              const Divider(height: 1),
+              SwitchListTile(
+                title: const Text('Show Progress'),
+                subtitle: const Text('Display progress indicators'),
+                value: _showProgress,
+                onChanged: (value) {
+                  setState(() {
+                    _showProgress = value;
+                    _updateConfig();
+                  });
+                },
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
 
-  Color _getSelectedColor() {
-    final taning = widget.tanings.firstWhere(
-      (t) => t.id == _selectedId,
-      orElse: () => widget.tanings.first,
+  Widget _buildWidgetPreview() {
+    // Sort the same way as the widget
+    final sorted = List<Taning>.from(widget.tanings)
+      ..sort((a, b) {
+        if (a.isPinned && !b.isPinned) return -1;
+        if (!a.isPinned && b.isPinned) return 1;
+        final aDate = a.endDate ?? a.startDate ?? DateTime(2100);
+        final bDate = b.endDate ?? b.startDate ?? DateTime(2100);
+        return aDate.compareTo(bDate);
+      });
+
+    final preview = sorted.take(4).toList();
+    final now = DateTime.now();
+
+    return Column(
+      children: [
+        Row(
+          children: [
+            const Text(
+              'TANING',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.5,
+              ),
+            ),
+            const Spacer(),
+            Text(
+              '▸',
+              style: TextStyle(color: Colors.grey.shade500, fontSize: 10),
+            ),
+          ],
+        ),
+        const Divider(color: Colors.white24, height: 12),
+        ...preview.map((t) => _buildPreviewRow(t, now)),
+      ],
     );
-    return taning.color.toColor();
   }
 
-  Widget _buildWidgetPreview() {
-    final taning = widget.tanings.firstWhere(
-      (t) => t.id == _selectedId,
-      orElse: () => widget.tanings.first,
-    );
-    
+  Widget _buildPreviewRow(Taning taning, DateTime now) {
     final icon = String.fromCharCode(taning.icon.codePoint);
+    final target = taning.endDate ?? taning.startDate;
+    String countdown = '—';
+    if (target != null) {
+      final diff = target.difference(now);
+      if (diff.isNegative) {
+        countdown = 'Overdue';
+      } else if (diff.inDays > 0) {
+        countdown = '${diff.inDays}d';
+      } else if (diff.inHours > 0) {
+        countdown = '${diff.inHours}h';
+      } else {
+        countdown = '${diff.inMinutes}m';
+      }
+    }
 
-    return Container(
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: Row(
         children: [
-          Row(
-            children: [
-              if (_showIcon)
-                Text(icon, style: const TextStyle(fontSize: 16)),
-              if (_showIcon) const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  taning.title,
+          if (_showIcons) ...[
+            Text(icon, style: const TextStyle(fontSize: 12)),
+            const SizedBox(width: 6),
+          ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _showIcons && taning.isPinned ? '📌 ${taning.title}' : taning.title,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-              ),
-            ],
+                if (_showDates && target != null)
+                  Text(
+                    '${target.month}/${target.day}/${target.year}',
+                    style: TextStyle(
+                      color: Colors.grey.shade500,
+                      fontSize: 9,
+                    ),
+                  ),
+              ],
+            ),
           ),
-          const Spacer(),
-          const Text(
-            '14d 6h',
+          Text(
+            countdown,
             style: TextStyle(
-              color: Colors.white,
-              fontSize: 28,
+              color: taning.color.toColor(),
+              fontSize: 11,
               fontWeight: FontWeight.bold,
             ),
           ),
-          const Spacer(),
-          if (_showProgress)
-            Container(
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(2),
-              ),
-              child: FractionallySizedBox(
-                widthFactor: 0.67,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-            ),
         ],
       ),
     );
@@ -370,10 +358,9 @@ class _WidgetConfigContentState extends State<_WidgetConfigContent> {
   void _updateConfig() {
     widget.onConfigChanged(
       WidgetConfig(
-        taningId: _selectedId,
+        showIcons: _showIcons,
+        showDates: _showDates,
         showProgress: _showProgress,
-        showIcon: _showIcon,
-        theme: _theme,
       ),
     );
   }
