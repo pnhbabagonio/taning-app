@@ -8,61 +8,69 @@ part 'taning_dao.g.dart';
 @DriftAccessor(tables: [TaningTable])
 class TaningDao extends DatabaseAccessor<AppDatabase> with _$TaningDaoMixin {
   TaningDao(super.db);
-  
+
   Future<int> insertTaning(TaningTableCompanion taning) {
     return into(taningTable).insert(taning);
   }
-  
-  // Now replace() works because we have a primary key
+
   Future<bool> updateTaning(TaningTableCompanion taning) {
     return update(taningTable).replace(taning);
   }
-  
+
   Future<void> deleteTaning(String id) {
     return (delete(taningTable)..where((t) => t.id.equals(id))).go();
   }
-  
+
   Future<TaningTableData?> getTaningById(String id) {
-    return (select(taningTable)..where((t) => t.id.equals(id))).getSingleOrNull();
+    return (select(taningTable)..where((t) => t.id.equals(id)))
+        .getSingleOrNull();
   }
-  
+
+  /// Watch a single Taning by id — emits on every DB change.
+  Stream<TaningTableData?> watchTaningById(String id) {
+    return (select(taningTable)..where((t) => t.id.equals(id)))
+        .watchSingleOrNull();
+  }
+
   Future<List<TaningTableData>> getAllTanings() {
     return select(taningTable).get();
   }
-  
+
   Future<List<TaningTableData>> getActiveTanings() {
     return (select(taningTable)
-      ..where((t) => t.isArchived.equals(false))
-      ..where((t) => t.isCompleted.equals(false))).get();
+          ..where((t) => t.isArchived.equals(false))
+          ..where((t) => t.isCompleted.equals(false)))
+        .get();
   }
-  
+
   Future<List<TaningTableData>> getCompletedTanings() {
-    return (select(taningTable)
-      ..where((t) => t.isCompleted.equals(true))).get();
+    return (select(taningTable)..where((t) => t.isCompleted.equals(true)))
+        .get();
   }
-  
+
   Future<List<TaningTableData>> getArchivedTanings() {
-    return (select(taningTable)
-      ..where((t) => t.isArchived.equals(true))).get();
+    return (select(taningTable)..where((t) => t.isArchived.equals(true)))
+        .get();
   }
-  
+
   Future<void> markAsCompleted(String id) {
-    return (update(taningTable)
-      ..where((t) => t.id.equals(id)))
-      .write(TaningTableCompanion(
+    return (update(taningTable)..where((t) => t.id.equals(id))).write(
+      TaningTableCompanion(
         isCompleted: const Value(true),
         completedAt: Value(DateTime.now()),
         updatedAt: Value(DateTime.now()),
-      ));
+      ),
+    );
   }
-  
+
   Stream<List<TaningTableData>> watchAllTanings() {
     return select(taningTable).watch();
   }
-  
+
   Stream<List<TaningTableData>> watchActiveTanings() {
     return (select(taningTable)
-      ..where((t) => t.isArchived.equals(false))
-      ..where((t) => t.isCompleted.equals(false))).watch();
+          ..where((t) => t.isArchived.equals(false))
+          ..where((t) => t.isCompleted.equals(false)))
+        .watch();
   }
 }

@@ -1,3 +1,4 @@
+// lib/features/tanings/presentation/providers/taning_providers.dart
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:taning/database/app_database.dart';
 import 'package:taning/features/tanings/data/datasources/local_datasource.dart';
@@ -35,20 +36,20 @@ final countdownEngineProvider = Provider<CountdownEngine>((ref) {
   return const CountdownEngine();
 });
 
-// Active Tanings provider
+// Active Tanings provider (reactive)
 final activeTaningsProvider = StreamProvider<List<Taning>>((ref) {
   final repository = ref.watch(taningRepositoryProvider);
   return repository.watchActive();
 });
 
-// All Tanings provider
+// All Tanings provider (reactive)
 final allTaningsProvider = StreamProvider<List<Taning>>((ref) {
   final repository = ref.watch(taningRepositoryProvider);
   return repository.watchAll();
 });
 
-// Single Taning provider
-final taningProvider = FutureProvider.family<Taning?, String>((ref, id) async {
+// Single Taning provider — REACTIVE (was FutureProvider before)
+final taningProvider = StreamProvider.family<Taning?, String>((ref, id) {
   final repository = ref.watch(taningRepositoryProvider);
-  return repository.getById(id);
+  return repository.watchById(id);
 });
