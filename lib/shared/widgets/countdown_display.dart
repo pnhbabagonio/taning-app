@@ -7,7 +7,11 @@ import 'package:taning/features/tanings/domain/entities/taning.dart';
 class CountdownDisplay extends ConsumerWidget {
   final Duration duration;
   final CountdownStyle style;
-  final Color? taningColor; // Renamed from 'color' to be clear
+
+  /// If provided, uses this color. Otherwise falls back to the
+  /// global accent color from settings.
+  final Color? color;
+
   final bool isOverdue;
   final bool isFinished;
 
@@ -15,16 +19,18 @@ class CountdownDisplay extends ConsumerWidget {
     super.key,
     required this.duration,
     this.style = CountdownStyle.detailed,
-    this.taningColor,
+    this.color,
     this.isOverdue = false,
     this.isFinished = false,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Get the global accent color from settings
-    final accentColor = ref.watch(accentColorProvider);
-    
+    // Use provided color, or fall back to global accent.
+    // Then coerce to non-nullable with a final fallback.
+    final Color effectiveColor =
+        color ?? ref.watch(accentColorProvider);
+
     if (isFinished) {
       return const Text(
         '✅ Done',
@@ -60,48 +66,20 @@ class CountdownDisplay extends ConsumerWidget {
 
     switch (style) {
       case CountdownStyle.simple:
-        return _buildSimpleDisplay(parts, accentColor);
       case CountdownStyle.detailed:
-        return _buildDetailedDisplay(parts, accentColor);
+        // Both use the same compact display.
+        // The difference is refresh rate, handled by the caller's ticker.
+        return _buildCompactDisplay(parts, effectiveColor);
       case CountdownStyle.full:
-        return _buildFullDisplay(parts, accentColor);
+        return _buildFullDisplay(parts, effectiveColor);
       case CountdownStyle.progress:
-        return const SizedBox.shrink();
       case CountdownStyle.calendar:
         return const SizedBox.shrink();
     }
   }
 
-  Widget _buildSimpleDisplay(List<_DisplayPart> parts, Color accentColor) {
-    final part = parts.firstWhere(
-      (p) => p.value > 0,
-      orElse: () => parts.last,
-    );
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          part.value.toString(),
-          style: TextStyle(
-            fontSize: 32,
-            fontWeight: FontWeight.w700,
-            color: accentColor, // Use global accent color
-            height: 1.0,
-          ),
-        ),
-        Text(
-          part.unit,
-          style: TextStyle(
-            fontSize: 14,
-            color: accentColor.withValues(alpha: 0.7), // Subtle accent
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDetailedDisplay(List<_DisplayPart> parts, Color accentColor) {
+  /// Compact display: "14d 6h 42m" — one line.
+  Widget _buildCompactDisplay(List<_DisplayPart> parts, Color color) {
     final filtered = parts.where((p) => p.value > 0).toList();
     if (filtered.isEmpty) {
       return Text(
@@ -109,7 +87,7 @@ class CountdownDisplay extends ConsumerWidget {
         style: TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.w700,
-          color: accentColor,
+          color: color,
         ),
       );
     }
@@ -119,12 +97,13 @@ class CountdownDisplay extends ConsumerWidget {
       style: TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.w700,
-        color: accentColor,
+        color: color,
       ),
     );
   }
 
-  Widget _buildFullDisplay(List<_DisplayPart> parts, Color accentColor) {
+  /// Full display: one unit per line.
+  Widget _buildFullDisplay(List<_DisplayPart> parts, Color color) {
     final filtered = parts.where((p) => p.value > 0).toList();
     if (filtered.isEmpty) {
       return Text(
@@ -132,7 +111,7 @@ class CountdownDisplay extends ConsumerWidget {
         style: TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.w700,
-          color: accentColor,
+          color: color,
         ),
       );
     }
@@ -145,7 +124,7 @@ class CountdownDisplay extends ConsumerWidget {
           style: TextStyle(
             fontSize: isPrimary ? 28 : 18,
             fontWeight: isPrimary ? FontWeight.w700 : FontWeight.w500,
-            color: isPrimary ? accentColor : accentColor.withValues(alpha: 0.7),
+            color: isPrimary ? color : color.withValues(alpha: 0.7),
             height: 1.2,
           ),
         );
@@ -160,6 +139,9 @@ class CountdownDisplay extends ConsumerWidget {
     final seconds = duration.inSeconds.remainder(60);
 
     final parts = <_DisplayPart>[];
+
+    // Simple and Detailed: hide seconds.
+    // Full: show seconds.
     if (days > 0 || style == CountdownStyle.full) {
       parts.add(_DisplayPart(days, 'days'));
     }
@@ -169,11 +151,12 @@ class CountdownDisplay extends ConsumerWidget {
     if (minutes > 0 || style == CountdownStyle.full) {
       parts.add(_DisplayPart(minutes, 'minutes'));
     }
-    if (seconds > 0 || style == CountdownStyle.full) {
+    if (style == CountdownStyle.full) {
       parts.add(_DisplayPart(seconds, 'seconds'));
     }
+
     if (parts.isEmpty) {
-      parts.add(const _DisplayPart(0, 'seconds'));
+      parts.add(_DisplayPart(0, 'seconds'));
     }
     return parts;
   }
