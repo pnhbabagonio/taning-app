@@ -73,4 +73,11 @@ class TaningDao extends DatabaseAccessor<AppDatabase> with _$TaningDaoMixin {
           ..where((t) => t.isCompleted.equals(false)))
         .watch();
   }
+
+  Stream<List<TaningTableData>> watchArchivedTanings() {
+  return (select(taningTable)
+        ..where((t) => t.isArchived.equals(true)))
+      .watch();
+}
+
 }

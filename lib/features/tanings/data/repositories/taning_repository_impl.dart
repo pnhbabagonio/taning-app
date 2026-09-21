@@ -146,6 +146,11 @@ class TaningRepositoryImpl implements TaningRepository {
     return localDataSource.watchActiveTanings();
   }
 
+  @override
+  Stream<List<Taning>> watchArchived() {
+    return localDataSource.watchArchivedTanings();
+  }
+
   /// Refresh the home screen widget with the latest data.
   /// Best-effort: never crash the app if widget update fails.
   Future<void> _refreshWidget() async {

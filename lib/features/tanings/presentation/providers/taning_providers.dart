@@ -53,3 +53,9 @@ final taningProvider = StreamProvider.family<Taning?, String>((ref, id) {
   final repository = ref.watch(taningRepositoryProvider);
   return repository.watchById(id);
 });
+
+// Archived Tanings provider (reactive)
+final archivedTaningsProvider = StreamProvider<List<Taning>>((ref) {
+  final repository = ref.watch(taningRepositoryProvider);
+  return repository.watchArchived();
+});

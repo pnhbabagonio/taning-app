@@ -44,4 +44,6 @@ abstract class TaningRepository {
 
   /// Watch active Tanings (for real-time updates).
   Stream<List<Taning>> watchActive();
+
+  Stream<List<Taning>> watchArchived();
 }

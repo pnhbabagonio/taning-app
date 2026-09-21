@@ -7,15 +7,39 @@ import 'package:taning/features/tanings/domain/engines/countdown_engine.dart';
 import 'package:taning/core/services/logger.dart';
 
 class WidgetBridge {
+  /// Maps a Material Icons codepoint to an equivalent emoji.
+  /// Falls back to ⏳ if unknown.
+  static String _codepointToEmoji(int codePoint) {
+    // Material Icons codepoints used in the app
+    const Map<int, String> emojiMap = {
+      0xE8ED: '✈️', // flight
+      0xE8F0: '🎂', // cake
+      0xE8F5: '🎓', // school
+      0xE8F8: '📝', // assignment
+      0xE8FB: '🏃', // fitness_center
+      0xE8FE: '💖', // favorite
+      0xE8E9: '📋', // event_note
+      0xE8FD: '⭐', // star
+      0xE8EF: '❤️', // favorite
+      0xE8F1: '🎉', // celebration
+      0xE8F2: '📅', // event
+      0xE8F3: '🗓️', // calendar_month
+      0xE8F4: '⏰', // schedule
+      0xE8F6: '🏫', // school
+      0xE8F7: '💼', // work
+      0xE8F9: '🏆', // emoji_events
+    };
+    return emojiMap[codePoint] ?? '⏳';
+  }
+
   static const String _prefKey = 'widget_data';
   static const String _iosGroupKey = 'widget_data_ios';
   static const int _maxTanings = 6;
 
   static Future<void> updateWidgetsWithAllTanings(List<Taning> tanings) async {
     try {
-      final activeTanings = tanings
-          .where((t) => !t.isArchived && !t.isCompleted)
-          .toList();
+      final activeTanings =
+          tanings.where((t) => !t.isArchived && !t.isCompleted).toList();
 
       activeTanings.sort((a, b) {
         if (a.isPinned && !b.isPinned) return -1;
@@ -53,8 +77,20 @@ class WidgetBridge {
         String dateText = '';
         final targetDate = state.targetDate;
         if (targetDate != null) {
-          const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                          'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+          const months = [
+            'Jan',
+            'Feb',
+            'Mar',
+            'Apr',
+            'May',
+            'Jun',
+            'Jul',
+            'Aug',
+            'Sep',
+            'Oct',
+            'Nov',
+            'Dec'
+          ];
           dateText =
               '${months[targetDate.month - 1]} ${targetDate.day}, ${targetDate.year}';
         }
@@ -64,7 +100,7 @@ class WidgetBridge {
           'title': taning.title,
           'countdown': countdownText,
           'date': dateText,
-          'icon': String.fromCharCode(taning.icon.codePoint),
+          'icon': _codepointToEmoji(taning.icon.codePoint),
           'color': taning.color.value,
           'red': (taning.color.value >> 16 & 0xFF) / 255.0,
           'green': (taning.color.value >> 8 & 0xFF) / 255.0,

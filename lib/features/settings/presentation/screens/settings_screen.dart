@@ -7,6 +7,7 @@ import 'package:taning/features/settings/presentation/widgets/theme_selector_dia
 import 'package:taning/features/tanings/presentation/widgets/taning_list.dart';
 import 'package:taning/core/services/notification_service.dart';
 import 'package:taning/app/theme/theme_provider.dart';
+import 'package:go_router/go_router.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -135,6 +136,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 },
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                 activeThumbColor: accentColor,
+              ),
+            ],
+          ),
+          _buildSection(
+            title: 'Manage',
+            children: [
+              _buildSettingTile(
+                icon: Icons.archive_outlined,
+                title: 'Archived Tanings',
+                subtitle: 'View and restore archived items',
+                onTap: () {
+                  context.push('/archive');
+                },
+                accentColor: accentColor,
               ),
             ],
           ),
@@ -360,11 +375,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       ),
       title: Text(title),
       subtitle: subtitle != null ? Text(subtitle) : null,
-      trailing: trailing ?? Icon(
-        Icons.chevron_right,
-        size: 20,
-        color: accentColor,
-      ),
+      trailing: trailing ??
+          Icon(
+            Icons.chevron_right,
+            size: 20,
+            color: accentColor,
+          ),
       onTap: onTap,
     );
   }

@@ -74,4 +74,10 @@ class LocalTaningDataSource {
           (results) => results.map(mapper.toDomain).toList(),
         );
   }
+
+  Stream<List<Taning>> watchArchivedTanings() {
+    return db.taningDao.watchArchivedTanings().map(
+          (results) => results.map(mapper.toDomain).toList(),
+        );
+  }
 }
