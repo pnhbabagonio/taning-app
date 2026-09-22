@@ -165,12 +165,14 @@ _$TaningIconImpl _$$TaningIconImplFromJson(Map<String, dynamic> json) =>
     _$TaningIconImpl(
       codePoint: (json['codePoint'] as num).toInt(),
       family: json['family'] as String?,
+      imagePath: json['imagePath'] as String?,
     );
 
 Map<String, dynamic> _$$TaningIconImplToJson(_$TaningIconImpl instance) =>
     <String, dynamic>{
       'codePoint': instance.codePoint,
       'family': instance.family,
+      'imagePath': instance.imagePath,
     };
 
 _$TaningColorImpl _$$TaningColorImplFromJson(Map<String, dynamic> json) =>

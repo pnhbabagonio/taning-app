@@ -1532,6 +1532,7 @@ TaningIcon _$TaningIconFromJson(Map<String, dynamic> json) {
 mixin _$TaningIcon {
   int get codePoint => throw _privateConstructorUsedError;
   String? get family => throw _privateConstructorUsedError;
+  String? get imagePath => throw _privateConstructorUsedError;
 
   /// Serializes this TaningIcon to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -1549,7 +1550,7 @@ abstract class $TaningIconCopyWith<$Res> {
           TaningIcon value, $Res Function(TaningIcon) then) =
       _$TaningIconCopyWithImpl<$Res, TaningIcon>;
   @useResult
-  $Res call({int codePoint, String? family});
+  $Res call({int codePoint, String? family, String? imagePath});
 }
 
 /// @nodoc
@@ -1569,6 +1570,7 @@ class _$TaningIconCopyWithImpl<$Res, $Val extends TaningIcon>
   $Res call({
     Object? codePoint = null,
     Object? family = freezed,
+    Object? imagePath = freezed,
   }) {
     return _then(_value.copyWith(
       codePoint: null == codePoint
@@ -1578,6 +1580,10 @@ class _$TaningIconCopyWithImpl<$Res, $Val extends TaningIcon>
       family: freezed == family
           ? _value.family
           : family // ignore: cast_nullable_to_non_nullable
+              as String?,
+      imagePath: freezed == imagePath
+          ? _value.imagePath
+          : imagePath // ignore: cast_nullable_to_non_nullable
               as String?,
     ) as $Val);
   }
@@ -1591,7 +1597,7 @@ abstract class _$$TaningIconImplCopyWith<$Res>
       __$$TaningIconImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int codePoint, String? family});
+  $Res call({int codePoint, String? family, String? imagePath});
 }
 
 /// @nodoc
@@ -1609,6 +1615,7 @@ class __$$TaningIconImplCopyWithImpl<$Res>
   $Res call({
     Object? codePoint = null,
     Object? family = freezed,
+    Object? imagePath = freezed,
   }) {
     return _then(_$TaningIconImpl(
       codePoint: null == codePoint
@@ -1619,6 +1626,10 @@ class __$$TaningIconImplCopyWithImpl<$Res>
           ? _value.family
           : family // ignore: cast_nullable_to_non_nullable
               as String?,
+      imagePath: freezed == imagePath
+          ? _value.imagePath
+          : imagePath // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -1626,7 +1637,8 @@ class __$$TaningIconImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$TaningIconImpl extends _TaningIcon {
-  const _$TaningIconImpl({required this.codePoint, this.family}) : super._();
+  const _$TaningIconImpl({required this.codePoint, this.family, this.imagePath})
+      : super._();
 
   factory _$TaningIconImpl.fromJson(Map<String, dynamic> json) =>
       _$$TaningIconImplFromJson(json);
@@ -1635,10 +1647,12 @@ class _$TaningIconImpl extends _TaningIcon {
   final int codePoint;
   @override
   final String? family;
+  @override
+  final String? imagePath;
 
   @override
   String toString() {
-    return 'TaningIcon(codePoint: $codePoint, family: $family)';
+    return 'TaningIcon(codePoint: $codePoint, family: $family, imagePath: $imagePath)';
   }
 
   @override
@@ -1648,12 +1662,14 @@ class _$TaningIconImpl extends _TaningIcon {
             other is _$TaningIconImpl &&
             (identical(other.codePoint, codePoint) ||
                 other.codePoint == codePoint) &&
-            (identical(other.family, family) || other.family == family));
+            (identical(other.family, family) || other.family == family) &&
+            (identical(other.imagePath, imagePath) ||
+                other.imagePath == imagePath));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, codePoint, family);
+  int get hashCode => Object.hash(runtimeType, codePoint, family, imagePath);
 
   /// Create a copy of TaningIcon
   /// with the given fields replaced by the non-null parameter values.
@@ -1673,7 +1689,9 @@ class _$TaningIconImpl extends _TaningIcon {
 
 abstract class _TaningIcon extends TaningIcon {
   const factory _TaningIcon(
-      {required final int codePoint, final String? family}) = _$TaningIconImpl;
+      {required final int codePoint,
+      final String? family,
+      final String? imagePath}) = _$TaningIconImpl;
   const _TaningIcon._() : super._();
 
   factory _TaningIcon.fromJson(Map<String, dynamic> json) =
@@ -1683,6 +1701,8 @@ abstract class _TaningIcon extends TaningIcon {
   int get codePoint;
   @override
   String? get family;
+  @override
+  String? get imagePath;
 
   /// Create a copy of TaningIcon
   /// with the given fields replaced by the non-null parameter values.

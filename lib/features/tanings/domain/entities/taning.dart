@@ -32,10 +32,9 @@ class Taning with _$Taning {
   }) = _Taning;
 
   factory Taning.fromJson(Map<String, dynamic> json) => _$TaningFromJson(json);
-  
+
   const Taning._();
-  
-  // Factory constructor for new Taning
+
   factory Taning.create({
     required String title,
     required TaningType type,
@@ -43,64 +42,60 @@ class Taning with _$Taning {
     DateTime? endDate,
     TaningIcon? icon,
     TaningColor? color,
-    TaningTheme? theme,
     CountdownStyle? countdownStyle,
     NotificationSettings? notificationSettings,
     RecurrencePattern? recurrence,
-    bool? isAllDay, String? description,
+    String? description,
   }) {
     return Taning(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       title: title,
+      description: description,
       type: type,
       startDate: startDate,
       endDate: endDate,
       timezone: 'local',
       icon: icon ?? TaningIcon.defaultIcon(),
       color: color ?? TaningColor.defaultColor(),
-      theme: theme ?? TaningTheme.midnight,
-      countdownStyle: countdownStyle ?? CountdownStyle.detailed,
-      notificationSettings: notificationSettings ?? NotificationSettings.defaults(),
+      theme: TaningTheme.midnight,
+      countdownStyle: countdownStyle ?? CountdownStyle.simple,
+      notificationSettings:
+          notificationSettings ?? NotificationSettings.defaults(),
       isCompleted: false,
       isArchived: false,
       isPinned: false,
       recurrence: recurrence,
       createdAt: DateTime.now(),
-      isAllDay: isAllDay ?? false,
+      isAllDay: false,
     );
   }
 }
 
-enum TaningType {
-  countdown,    // Count down to a specific date/time
-  duration,     // Duration with start and end
-  countUp,      // Count up from a start date
-  recurring,    // Recurring event
-}
+enum TaningType { countdown, duration, countUp, recurring }
 
 @freezed
 class RecurrencePattern with _$RecurrencePattern {
   const factory RecurrencePattern.daily({
     @Default(1) int interval,
   }) = DailyRecurrence;
-  
+
   const factory RecurrencePattern.weekly({
     required List<int> weekdays,
     @Default(1) int interval,
   }) = WeeklyRecurrence;
-  
+
   const factory RecurrencePattern.monthly({
     int? dayOfMonth,
     @Default(1) int interval,
   }) = MonthlyRecurrence;
-  
+
   const factory RecurrencePattern.yearly({
     required int month,
     int? dayOfMonth,
   }) = YearlyRecurrence;
-  
+
   const RecurrencePattern._();
-  
+
   factory RecurrencePattern.fromJson(Map<String, dynamic> json) =>
       _$RecurrencePatternFromJson(json);
 }
@@ -110,21 +105,21 @@ class TaningIcon with _$TaningIcon {
   const factory TaningIcon({
     required int codePoint,
     String? family,
+    String? imagePath,
   }) = _TaningIcon;
-  
+
   const TaningIcon._();
-  
+
   factory TaningIcon.fromJson(Map<String, dynamic> json) =>
       _$TaningIconFromJson(json);
-  
-  // Default icons
-  static TaningIcon defaultIcon() => const TaningIcon(codePoint: 0xE8E9); // event_note
-  static TaningIcon vacation() => const TaningIcon(codePoint: 0xE8ED); // flight
-  static TaningIcon birthday() => const TaningIcon(codePoint: 0xE8F0); // cake
-  static TaningIcon graduation() => const TaningIcon(codePoint: 0xE8F5); // school
-  static TaningIcon deadline() => const TaningIcon(codePoint: 0xE8F8); // assignment
-  static TaningIcon challenge() => const TaningIcon(codePoint: 0xE8FB); // fitness_center
-  static TaningIcon anniversary() => const TaningIcon(codePoint: 0xE8FE); // favorite
+
+  static TaningIcon defaultIcon() => const TaningIcon(codePoint: 0xE8E9);
+  static TaningIcon vacation() => const TaningIcon(codePoint: 0xE8ED);
+  static TaningIcon birthday() => const TaningIcon(codePoint: 0xE8F0);
+  static TaningIcon graduation() => const TaningIcon(codePoint: 0xE8F5);
+  static TaningIcon deadline() => const TaningIcon(codePoint: 0xE8F8);
+  static TaningIcon challenge() => const TaningIcon(codePoint: 0xE8FB);
+  static TaningIcon anniversary() => const TaningIcon(codePoint: 0xE8FE);
 }
 
 @freezed
@@ -133,17 +128,16 @@ class TaningColor with _$TaningColor {
     required int value,
     String? name,
   }) = _TaningColor;
-  
+
   const TaningColor._();
-  
+
   factory TaningColor.fromJson(Map<String, dynamic> json) =>
       _$TaningColorFromJson(json);
-  
+
   static TaningColor defaultColor() => const TaningColor(value: 0xFF4F46E5);
-  
+
   Color toColor() => Color(value);
-  
-  // Preset colors
+
   static const List<TaningColor> presets = [
     TaningColor(value: 0xFF4F46E5, name: 'Indigo'),
     TaningColor(value: 0xFF7C3AED, name: 'Purple'),
@@ -168,11 +162,11 @@ enum TaningTheme {
 }
 
 enum CountdownStyle {
-  simple,     // "14 days"
-  detailed,   // "14d 06h 42m"
-  full,       // "14 days 6 hours 42 minutes"
-  progress,   // "Day 14 / 30"
-  calendar,   // "14 days • August 24"
+  simple,
+  detailed,
+  full,
+  progress,
+  calendar,
 }
 
 @freezed
@@ -188,26 +182,26 @@ class NotificationSettings with _$NotificationSettings {
     bool? customNotification,
     int? customMinutesBefore,
   }) = _NotificationSettings;
-  
+
   const NotificationSettings._();
-  
+
   factory NotificationSettings.fromJson(Map<String, dynamic> json) =>
       _$NotificationSettingsFromJson(json);
-  
+
   factory NotificationSettings.defaults() => const NotificationSettings(
-    enabled: true,
-    oneDayBefore: false,
-    threeDaysBefore: false,
-    sevenDaysBefore: false,
-    oneHourBefore: false,
-    thirtyMinutesBefore: false,
-    atExactTime: false,
-  );
-  
+        enabled: true,
+        oneDayBefore: false,
+        threeDaysBefore: false,
+        sevenDaysBefore: false,
+        oneHourBefore: false,
+        thirtyMinutesBefore: false,
+        atExactTime: false,
+      );
+
   List<NotificationTime> getNotificationTimes(DateTime target) {
     final times = <NotificationTime>[];
     if (!enabled) return times;
-    
+
     if (oneDayBefore) {
       times.add(NotificationTime(
         time: target.subtract(const Duration(days: 1)),
@@ -250,7 +244,6 @@ class NotificationSettings with _$NotificationSettings {
         type: NotificationType.custom,
       ));
     }
-    
     return times;
   }
 }

@@ -15,7 +15,9 @@ class CreateScreen extends ConsumerStatefulWidget {
 class _CreateScreenState extends ConsumerState<CreateScreen> {
   final PageController _pageController = PageController();
   int _currentStep = 0;
-  final CreateViewModel _createViewModel = CreateViewModel();
+  final CreateViewModel _viewModel = CreateViewModel();
+
+  static const int _totalSteps = 4;
 
   @override
   void dispose() {
@@ -36,33 +38,26 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
             child: PageView(
               controller: _pageController,
               onPageChanged: (index) {
-                setState(() {
-                  _currentStep = index;
-                });
+                setState(() => _currentStep = index);
               },
               children: [
-                TitleStep(
-                  viewModel: _createViewModel,
+                SetupStep(
+                  viewModel: _viewModel,
                   onNext: () => _goToStep(1),
                 ),
                 DateTimeStep(
-                  viewModel: _createViewModel,
+                  viewModel: _viewModel,
                   onNext: () => _goToStep(2),
                   onBack: () => _goToStep(0),
                 ),
-                TypeStep(
-                  viewModel: _createViewModel,
+                CustomizeStep(
+                  viewModel: _viewModel,
                   onNext: () => _goToStep(3),
                   onBack: () => _goToStep(1),
                 ),
-                CustomizeStep(
-                  viewModel: _createViewModel,
-                  onNext: () => _goToStep(4),
-                  onBack: () => _goToStep(2),
-                ),
                 PreviewStep(
-                  viewModel: _createViewModel,
-                  onBack: () => _goToStep(3),
+                  viewModel: _viewModel,
+                  onBack: () => _goToStep(2),
                   onCreate: _createTaning,
                 ),
               ],
@@ -91,10 +86,7 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
         if (_currentStep > 0)
           TextButton(
             onPressed: _resetCreation,
-            child: Text(
-              'Reset',
-              style: TextStyle(color: accentColor),
-            ),
+            child: Text('Reset', style: TextStyle(color: accentColor)),
           ),
       ],
     );
@@ -104,10 +96,9 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       child: Row(
-        children: List.generate(5, (index) {
+        children: List.generate(_totalSteps, (index) {
           final isActive = index == _currentStep;
           final isCompleted = index < _currentStep;
-
           return Expanded(
             child: Row(
               children: [
@@ -116,13 +107,13 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
                     height: 3,
                     decoration: BoxDecoration(
                       color: isCompleted || isActive
-                          ? accentColor // Use accent color
+                          ? accentColor
                           : Colors.grey.shade300,
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
                 ),
-                if (index < 4) const SizedBox(width: 4),
+                if (index < _totalSteps - 1) const SizedBox(width: 4),
               ],
             ),
           );
@@ -137,14 +128,12 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
-    setState(() {
-      _currentStep = step;
-    });
+    setState(() => _currentStep = step);
   }
 
   void _resetCreation() {
     setState(() {
-      _createViewModel.reset();
+      _viewModel.reset();
       _currentStep = 0;
       _pageController.jumpToPage(0);
     });
@@ -171,7 +160,8 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
               Navigator.pop(context);
               Navigator.pop(context);
             },
-            child: const Text('Exit', style: TextStyle(color: Colors.red)),
+            child:
+                const Text('Exit', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -180,7 +170,7 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
 
   void _createTaning() async {
     try {
-      final taning = _createViewModel.buildTaning();
+      final taning = _viewModel.buildTaning();
       await ref.read(taningRepositoryProvider).save(taning);
 
       if (mounted) {

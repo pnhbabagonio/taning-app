@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:taning/features/tanings/presentation/view_models/create_view_model.dart';
+import 'package:intl/intl.dart';
 import 'package:taning/features/settings/presentation/providers/settings_providers.dart';
+import 'package:taning/features/tanings/domain/entities/taning.dart';
+import 'package:taning/features/tanings/presentation/view_models/create_view_model.dart';
 
 class DateTimeStep extends ConsumerStatefulWidget {
   final CreateViewModel viewModel;
@@ -21,221 +22,226 @@ class DateTimeStep extends ConsumerStatefulWidget {
 }
 
 class _DateTimeStepState extends ConsumerState<DateTimeStep> {
-  DateTime? _selectedDate;
-  TimeOfDay? _selectedTime;
-  bool _isAllDay = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _selectedDate = widget.viewModel.endDate;
-    _isAllDay = widget.viewModel.isAllDay;
-    if (_selectedDate != null) {
-      _selectedTime = TimeOfDay.fromDateTime(_selectedDate!);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    final accentColor = ref.watch(accentColorProvider);
+    final type = widget.viewModel.type;
+
     return SingleChildScrollView(
-      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       padding: EdgeInsets.fromLTRB(
         24,
         24,
         24,
-        24 + MediaQuery.of(context).viewInsets.bottom,
+        24 + MediaQuery.of(context).viewInsets.bottom + 16,
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 20),
-          const Text(
-            'When?',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.w700,
-            ),
+          Text(
+            _titleFor(type),
+            style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Set the date and time for your Taning',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey,
-            ),
+          Text(
+            _subtitleFor(type),
+            style: const TextStyle(fontSize: 16, color: Colors.grey),
           ),
           const SizedBox(height: 32),
-          // Date picker
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.calendar_today),
-              title: Text(
-                _selectedDate != null
-                    ? DateFormat('EEEE, MMMM d, y').format(_selectedDate!)
-                    : 'Select date',
-                style: TextStyle(
-                  fontWeight: _selectedDate != null ? FontWeight.w500 : FontWeight.normal,
-                  color: _selectedDate != null ? null : Colors.grey,
-                ),
-              ),
-              trailing: _selectedDate != null
-                  ? IconButton(
-                      icon: const Icon(Icons.clear),
-                      onPressed: () {
-                        setState(() {
-                          _selectedDate = null;
-                          widget.viewModel.endDate = null;
-                        });
-                      },
-                    )
-                  : null,
-              onTap: _selectDate,
+
+          // For Duration: two pickers
+          if (type == TaningType.duration) ...[
+            _buildDatePicker(
+              label: 'Start',
+              date: widget.viewModel.startDate,
+              accentColor: accentColor,
+              onPick: _pickStartDate,
+              onClear: () => setState(() => widget.viewModel.startDate = null),
             ),
-          ),
-          const SizedBox(height: 12),
-          // Time picker (only if not all-day)
-          if (!_isAllDay)
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.access_time),
-                title: Text(
-                  _selectedTime != null
-                      ? _selectedTime!.format(context)
-                      : 'Select time',
-                  style: TextStyle(
-                    fontWeight: _selectedTime != null ? FontWeight.w500 : FontWeight.normal,
-                    color: _selectedTime != null ? null : Colors.grey,
-                  ),
-                ),
-                trailing: _selectedTime != null
-                    ? IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          setState(() {
-                            _selectedTime = null;
-                          });
-                        },
-                      )
-                    : null,
-                onTap: _selectTime,
-              ),
+            const SizedBox(height: 12),
+            _buildDatePicker(
+              label: 'End',
+              date: widget.viewModel.endDate,
+              accentColor: accentColor,
+              onPick: _pickEndDate,
+              onClear: () => setState(() => widget.viewModel.endDate = null),
             ),
-          const SizedBox(height: 12),
-          // All-day toggle
-          SwitchListTile(
-            title: const Text('All day'),
-            subtitle: const Text('Counts calendar days, not exact time'),
-            value: _isAllDay,
-            onChanged: (value) {
-              setState(() {
-                _isAllDay = value;
-                widget.viewModel.isAllDay = value;
-                if (value) {
-                  _selectedTime = null;
+          ] else ...[
+            // For Countdown / CountUp / Recurring: one picker
+            _buildDatePicker(
+              label: _singleLabel(type),
+              date: type == TaningType.countUp
+                  ? widget.viewModel.startDate
+                  : widget.viewModel.endDate,
+              accentColor: accentColor,
+              onPick: type == TaningType.countUp
+                  ? _pickStartDate
+                  : _pickEndDate,
+              onClear: () => setState(() {
+                if (type == TaningType.countUp) {
+                  widget.viewModel.startDate = null;
+                } else {
+                  widget.viewModel.endDate = null;
                 }
-              });
-            },
-          ),
+              }),
+            ),
+          ],
+
           const SizedBox(height: 32),
-          Padding(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).padding.bottom + 8,
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: widget.onBack,
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: ref.watch(accentColorProvider),
-                      side: BorderSide(
-                        color: ref.watch(accentColorProvider),
-                      ),
-                    ),
-                    child: const Text('Back'),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: widget.onBack,
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: accentColor,
+                    side: BorderSide(color: accentColor),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
+                  child: const Text('Back'),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: _isDateValid ? widget.onNext : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: ref.watch(accentColorProvider),
-                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                      disabledBackgroundColor: Colors.grey.shade300,
-                    ),
-                    child: const Text('Next'),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed:
+                      widget.viewModel.isDateValid ? widget.onNext : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: accentColor,
+                    foregroundColor: Colors.white,
+                    disabledBackgroundColor: Colors.grey.shade300,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
+                  child: const Text('Next'),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 
-  bool get _isDateValid {
-    if (_selectedDate == null) return false;
-    if (!_isAllDay && _selectedTime == null) return false;
-    return true;
+  Widget _buildDatePicker({
+    required String label,
+    required DateTime? date,
+    required Color accentColor,
+    required Future<void> Function() onPick,
+    required VoidCallback onClear,
+  }) {
+    final formatted = date != null
+        ? DateFormat('EEEE, MMM d, y • h:mm a').format(date)
+        : 'Not set';
+
+    return Card(
+      child: ListTile(
+        leading: Icon(
+          Icons.event,
+          color: date != null ? accentColor : Colors.grey,
+        ),
+        title: Text(
+          label,
+          style: const TextStyle(fontSize: 12, color: Colors.grey),
+        ),
+        subtitle: Text(
+          formatted,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: date != null ? FontWeight.w500 : FontWeight.normal,
+            color: date != null ? null : Colors.grey,
+          ),
+        ),
+        trailing: date != null
+            ? IconButton(
+                icon: const Icon(Icons.clear),
+                onPressed: onClear,
+              )
+            : null,
+        onTap: onPick,
+      ),
+    );
   }
 
-  Future<void> _selectDate() async {
+  String _titleFor(TaningType type) {
+    switch (type) {
+      case TaningType.countdown:
+        return 'When does it end?';
+      case TaningType.duration:
+        return 'When does it start and end?';
+      case TaningType.countUp:
+        return 'When did it start?';
+      case TaningType.recurring:
+        return 'When does it happen?';
+    }
+  }
+
+  String _subtitleFor(TaningType type) {
+    switch (type) {
+      case TaningType.countdown:
+        return 'Pick the date and time you are counting down to';
+      case TaningType.duration:
+        return 'Pick the start and end of your period';
+      case TaningType.countUp:
+        return 'Pick the date and time you want to count from';
+      case TaningType.recurring:
+        return 'Pick the next occurrence';
+    }
+  }
+
+  String _singleLabel(TaningType type) {
+    switch (type) {
+      case TaningType.countUp:
+        return 'Start';
+      case TaningType.recurring:
+        return 'Next occurrence';
+      default:
+        return 'Target';
+    }
+  }
+
+  Future<void> _pickStartDate() async {
+    final picked = await _pickDateTime(widget.viewModel.startDate);
+    if (picked != null) {
+      setState(() => widget.viewModel.startDate = picked);
+    }
+  }
+
+  Future<void> _pickEndDate() async {
+    final picked = await _pickDateTime(widget.viewModel.endDate);
+    if (picked != null) {
+      setState(() => widget.viewModel.endDate = picked);
+    }
+  }
+
+  /// Shows date picker, then time picker. Defaults to today at 12:00 AM.
+  Future<DateTime?> _pickDateTime(DateTime? initial) async {
     final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
     final date = await showDatePicker(
       context: context,
-      initialDate: _selectedDate ?? now,
-      firstDate: now,
-      lastDate: now.add(const Duration(days: 365 * 10)),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: Theme.of(context).primaryColor,
-            ),
-          ),
-          child: child!,
-        );
-      },
+      initialDate: initial ?? today,
+      firstDate: DateTime(now.year - 5),
+      lastDate: DateTime(now.year + 20),
     );
+    if (date == null) return null;
 
-    if (date != null) {
-      setState(() {
-        _selectedDate = date;
-        if (_selectedTime != null) {
-          _updateDateTime();
-        } else {
-          widget.viewModel.endDate = date;
-        }
-      });
-    }
-  }
+    if (!mounted) return null;
 
-  Future<void> _selectTime() async {
     final time = await showTimePicker(
       context: context,
-      initialTime: _selectedTime ?? TimeOfDay.now(),
+      initialTime: initial != null
+          ? TimeOfDay.fromDateTime(initial)
+          : const TimeOfDay(hour: 0, minute: 0), // 12:00 AM
     );
+    if (time == null) return null;
 
-    if (time != null) {
-      setState(() {
-        _selectedTime = time;
-        _updateDateTime();
-      });
-    }
-  }
-
-  void _updateDateTime() {
-    if (_selectedDate != null && _selectedTime != null) {
-      widget.viewModel.endDate = DateTime(
-        _selectedDate!.year,
-        _selectedDate!.month,
-        _selectedDate!.day,
-        _selectedTime!.hour,
-        _selectedTime!.minute,
-      );
-    }
+    return DateTime(
+      date.year,
+      date.month,
+      date.day,
+      time.hour,
+      time.minute,
+    );
   }
 }
